@@ -38,7 +38,12 @@ class Chatroom(db.Document):
     roomType = db.IntField()
 
     def to_json(self):
-        return {"name": self.name}
+        return {
+            'name': self.name,
+            'users': [user.to_json() for user in self.users],
+            'messages': [message.to_json() for message in self.messages],
+            'roomType': self.roomType
+        }
 
 
 class User(db.Document):
@@ -161,6 +166,11 @@ def get_user_rooms():
 @app.route('/room/delete', methods=['DELETE'])
 def delete_room():
     print(request.args.get("name"))
+    # remove chatroom from users that were in it
+    for user in User.objects():
+        user.chatrooms.remove(Chatroom.objects(
+            name=request.args.get("name")).first())
+        user.save()
     Chatroom.objects(name=request.args.get("name")).delete()
     return "Room {} deleted".format(request.args.get("name"))
 
@@ -185,6 +195,11 @@ def create_user():
 @app.route('/user/delete', methods=['DELETE'])
 def delete_user():
     print(request.args.get("username"))
+    # remove user from all rooms
+    for room in Chatroom.objects():
+        room.users.remove(User.objects(
+            username=request.args.get("username")).first())
+        room.save()
     User.objects(username=request.args.get("username")).delete()
     return "User {} deleted".format(request.args.get("username"))
 
