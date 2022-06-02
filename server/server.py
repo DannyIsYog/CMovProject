@@ -36,6 +36,8 @@ class Chatroom(db.Document):
     users = db.ListField(db.ReferenceField('User'))
     messages = db.ListField(db.ReferenceField('Message'))
     roomType = db.IntField()
+    centerLocation = db.PointField()
+    radius = db.FloatField()
 
     def to_json(self):
         return {
