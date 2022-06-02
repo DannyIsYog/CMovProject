@@ -64,4 +64,12 @@
         android:textSize="20sp"
         />
 
+    <TextView
+        android:id="@+id/btn_no_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="600dp"
+        android:clickable="true"
+        android:text="Continue without Login" />
 </RelativeLayout>
