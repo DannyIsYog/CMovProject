@@ -3,8 +3,10 @@ package pt.ulisboa.tecnico.cmov.cmovproject;
 import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
 
-public class ChatPage extends Activity {
+
+public class ChatPage extends AppCompatActivity {
 
 
 

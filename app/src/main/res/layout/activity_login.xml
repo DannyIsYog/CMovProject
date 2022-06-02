@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Login">
 
+
     <ImageView
         android:id="@+id/app_logo"
         android:layout_width="300dp"
@@ -41,7 +42,7 @@
     <Button
         android:id="@+id/btn_login"
         android:text="Log in"
-        android:layout_width="120dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/edt_password"
         android:layout_centerHorizontal="true"
@@ -54,7 +55,7 @@
     <Button
         android:id="@+id/btn_signup"
         android:text="Sign Up"
-        android:layout_width="120dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/btn_login"
         android:layout_centerHorizontal="true"
@@ -71,5 +72,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="600dp"
         android:clickable="true"
-        android:text="Continue without Login" />
+        android:text="Continue without Login"
+        android:focusable="true" />
 </RelativeLayout>
