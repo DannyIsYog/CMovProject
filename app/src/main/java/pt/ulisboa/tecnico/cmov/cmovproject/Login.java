@@ -12,13 +12,11 @@ import android.widget.TextView;
 
 public class Login extends AppCompatActivity {
 
-    private EditText edtEmail;
-    private EditText edtPassword ;
+    private EditText edtName;
+    private EditText edtPassword;
     private Button btnLogin;
-    private Button btnSignUp;
+    private TextView btnSignUp;
     private TextView btnNoLogIn;
-
-
 
 
     @Override
@@ -26,7 +24,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        edtEmail = findViewById(R.id.edt_email);
+        edtName = findViewById(R.id.edt_name);
         edtPassword = findViewById(R.id.edt_password);
         btnLogin = findViewById(R.id.btn_login);
         btnSignUp = findViewById(R.id.btn_signup);
@@ -34,6 +32,15 @@ public class Login extends AppCompatActivity {
 
         //underlines the text
         btnNoLogIn.setPaintFlags(btnNoLogIn.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Login.this,ChatPage.class);
+                startActivity(intent);
+
+            }
+        });
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -44,8 +51,8 @@ public class Login extends AppCompatActivity {
 
         btnNoLogIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent intent1 = new Intent(Login.this,NoLogin.class);
-                startActivity(intent1);
+                Intent intent = new Intent(Login.this,NoLogin.class);
+                startActivity(intent);
             }
         });
 
