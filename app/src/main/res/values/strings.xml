@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CMovProject</string>
+    <string name="default_new_msg_txt">hi</string>
 </resources>
