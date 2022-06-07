@@ -6,12 +6,12 @@
 
     <item android:title="Chats"
         android:icon="@drawable/chat"
-        android:id="@+id/chat"/>
+        android:id="@+id/chatsFragment" />
     <item android:title="Add"
         android:icon="@drawable/plus"
-        android:id="@+id/add"/>
+        android:id="@+id/addFragment"/>
     <item android:title="Settings"
         android:icon="@drawable/more"
-        android:id="@+id/more"/>
+        android:id="@+id/settingsFragment" />
 
 </menu>
