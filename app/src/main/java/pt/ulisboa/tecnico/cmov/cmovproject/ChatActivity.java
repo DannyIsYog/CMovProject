@@ -24,6 +24,9 @@ public class ChatActivity extends AppCompatActivity {
     private EditText et;
     private RecyclerViewChatAdapter adapter;
 
+    // if you change this you have to change the list type in activity_chat.xml too
+    private Boolean USE_OLD_LIST = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,26 +41,29 @@ public class ChatActivity extends AppCompatActivity {
         // show messages
         //updateShowMessages();
 
-        // new code for weird recycle list
+        if (!USE_OLD_LIST) {
+            // new code for weird recycle list
 
-        RecyclerView layoutList = findViewById(R.id.chat_entries);
+            RecyclerView layoutList = findViewById(R.id.chat_entries);
 
-        // instantiate my custom adapter and assign it to the view
-        adapter = new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
-        Log.d("ChatActivity", "Will set adapter to recyclerView!");
-        layoutList.setAdapter(adapter);
-        Log.d("ChatActivity", "Adapter was set on recyclerView!");
+            // instantiate my custom adapter and assign it to the view
+            adapter = new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
+            Log.d("ChatActivity", "Will set adapter to recyclerView!");
+            layoutList.setAdapter(adapter);
+            Log.d("ChatActivity", "Adapter was set on recyclerView!");
 
-        layoutList.setLayoutManager(new LinearLayoutManager(this));
-        Log.d("ChatActivity", "LayoutList was set on recyclerView!");
-        
+            layoutList.setLayoutManager(new LinearLayoutManager(this));
+            Log.d("ChatActivity", "LayoutList was set on recyclerView!");
+        }
+
         // Insert new message on chat
         et = findViewById(R.id.new_chat_entry);
         Log.d("ChatActivity", "EditText of new chat entry OK");
         et.setOnKeyListener(new EditText.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                Log.d("ChatActivity : OnKey", "detected key press");
+                //Log.d("ChatActivity : OnKey", "detected key press");
+
                 // filter action to only run method on release
                 if (event.getAction()!=KeyEvent.ACTION_DOWN)
                     return true;
@@ -78,29 +84,32 @@ public class ChatActivity extends AppCompatActivity {
     private void updateShowMessages(){
         ArrayList<ChatEntry> list = chatGroup.getEntries();
 
-        // OLD CODE FOR NORMAL LIST
-        /*
-        String[] msgArray = new String[list.size()];
-        int i = 0;
-        for (ChatEntry entry : list) {
-            msgArray[i++] = entry.getUsername() + " said: " + entry.getMsg().getText();
+        if (USE_OLD_LIST) {
+            // OLD CODE FOR NORMAL LIST
+            //
+            String[] msgArray = new String[list.size()];
+            int i = 0;
+            for (ChatEntry entry : list) {
+                msgArray[i++] = entry.getUsername() + " said: " + entry.getMsg().getText();
+            }
+
+            Log.d("ChatActivity", "update: msgArray = "+String.valueOf(msgArray.toString()));
+
+            // put array adapter on R.id.todo_list
+            ArrayAdapter<String> arr =
+                    new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, msgArray);
+
+            ListView layoutList = findViewById(R.id.chat_entries);
+            layoutList.setAdapter(arr);
+            // end of old code
+            //
         }
+        else {
 
-        Log.d("ChatActivity", "update: msgArray = "+String.valueOf(msgArray.toString()));
-
-        // put array adapter on R.id.todo_list
-        ArrayAdapter<String> arr =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, msgArray);
-
-        ListView layoutList = findViewById(R.id.chat_entries);
-        layoutList.setAdapter(arr);
-        // end of old code
-        */
-
-        Log.d("ChatActivity","Update() : will notify RecyclerAdapter");
-        this.adapter.notifyDataSetChanged();
-        Log.d("ChatActivity","Update() : notified RecyclerAdapter");
-
+            Log.d("ChatActivity", "Update() : will notify RecyclerAdapter");
+            this.adapter.notifyDataSetChanged();
+            Log.d("ChatActivity", "Update() : notified RecyclerAdapter");
+        }
 
         //
 

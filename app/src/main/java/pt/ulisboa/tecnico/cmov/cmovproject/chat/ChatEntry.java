@@ -30,4 +30,8 @@ public class ChatEntry implements Serializable {
         int msgBytes = msg.getByteCount();
         return userByes + msgBytes;
     }
+
+    public String toString(){
+        return "ENTRY: { username : "+username+" msg : "+msg.getText().toString()+" }";
+    }
 }

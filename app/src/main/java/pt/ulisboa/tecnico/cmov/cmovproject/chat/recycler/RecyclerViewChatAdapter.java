@@ -25,6 +25,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
     private ChatGroup chatGroup;
     private Context myContext;
 
+
     // TODO: maybe just chatGroup? see how I will recover things from cache...
     public RecyclerViewChatAdapter(Context context, ChatGroup chatGroup) {
         this.entries = chatGroup.getEntries();
