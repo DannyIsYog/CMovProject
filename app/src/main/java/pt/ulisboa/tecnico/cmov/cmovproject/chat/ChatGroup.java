@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.cmovproject.chat;
 
+import android.util.Log;
 import android.util.LruCache;
 
 import java.io.Serializable;
@@ -32,6 +33,7 @@ public class ChatGroup implements Serializable {
     }
 
     public ArrayList<ChatEntry> getEntries() {
+        Log.d("ChatGroup", "entries: "+this.entries);
         return this.entries;
     }
 

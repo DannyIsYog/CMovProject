@@ -47,7 +47,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
         ChatEntry chatEntry = chatGroup.getEntries().get(i);
 
         // TODO : PUT DATA INTO CUSTOM VIEW HOLDER?
-        customViewHolder.myString = chatEntry.getUsername() + " : " + chatEntry.getMsg();
+        customViewHolder.myString = chatEntry.getUsername() + " : " + chatEntry.getMsg().getText();
 
         Log.d("RecyclerAdapt: bind", "myString = "+customViewHolder.myString);
         //Setting text view title
@@ -67,6 +67,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
         public CustomViewHolder(View view) {
             super(view);
             this.myString = "ola ola ola debug debug";
+            Log.d("RecyclerAdapt: custom", "they called my constructor!");
             //this.imageView = (ImageView) view.findViewById(R.id.thumbnail);
             //this.textView = (TextView) view.findViewById(R.id.title);
         }

@@ -22,6 +22,7 @@ public class ChatActivity extends AppCompatActivity {
     private ChatGroup chatGroup;
     private String myUsername;
     private EditText et;
+    private RecyclerViewChatAdapter adapter;
 
 
     @Override
@@ -36,6 +37,19 @@ public class ChatActivity extends AppCompatActivity {
 
         // show messages
         //updateShowMessages();
+
+        // new code for weird recycle list
+
+        RecyclerView layoutList = findViewById(R.id.chat_entries);
+
+        // instantiate my custom adapter and assign it to the view
+        adapter = new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
+        Log.d("ChatActivity", "Will set adapter to recyclerView!");
+        layoutList.setAdapter(adapter);
+        Log.d("ChatActivity", "Adapter was set on recyclerView!");
+
+        layoutList.setLayoutManager(new LinearLayoutManager(this));
+        Log.d("ChatActivity", "LayoutList was set on recyclerView!");
         
         // Insert new message on chat
         et = findViewById(R.id.new_chat_entry);
@@ -83,14 +97,11 @@ public class ChatActivity extends AppCompatActivity {
         // end of old code
         */
 
+        Log.d("ChatActivity","Update() : will notify RecyclerAdapter");
+        this.adapter.notifyDataSetChanged();
+        Log.d("ChatActivity","Update() : notified RecyclerAdapter");
 
-        // new code for weird list
-        RecyclerView layoutList = findViewById(R.id.chat_entries);
-        layoutList.setLayoutManager(new LinearLayoutManager(this));
 
-        RecyclerViewChatAdapter adapter =
-                new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
-        layoutList.setAdapter(adapter);
         //
 
     }
