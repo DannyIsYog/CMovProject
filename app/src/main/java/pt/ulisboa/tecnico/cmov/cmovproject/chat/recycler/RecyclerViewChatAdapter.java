@@ -37,7 +37,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
     @Override
     public CustomViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.activity_chat, null);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.chat_entry_row, null);
         CustomViewHolder viewHolder = new CustomViewHolder(view);
         Log.d("RecyclerAdapt: onCreate", "onCreateViewHolder was called!");
         return viewHolder;
@@ -52,7 +52,8 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
 
         Log.d("RecyclerAdapt: bind", "myString = "+customViewHolder.myString);
         //Setting text view title
-        //customViewHolder.textView.setText("blabla");
+        customViewHolder.msgTextView.setText(chatEntry.getMsg().getText());
+        customViewHolder.usernameView.setText(chatEntry.getUsername());
     }
 
     @Override
@@ -62,7 +63,8 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
 
     class CustomViewHolder extends RecyclerView.ViewHolder {
 
-        //protected TextView textView;
+        protected TextView usernameView;
+        protected TextView msgTextView;
         protected String myString = "asd";
 
         public CustomViewHolder(View view) {
@@ -70,7 +72,8 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
             this.myString = "ola ola ola debug debug";
             Log.d("RecyclerAdapt: custom", "they called my constructor!");
             //this.imageView = (ImageView) view.findViewById(R.id.thumbnail);
-            //this.textView = (TextView) view.findViewById(R.id.title);
+            this.usernameView = (TextView) view.findViewById(R.id.chat_entry_row_username);
+            this.msgTextView = (TextView) view.findViewById(R.id.chat_entry_row_text);
         }
     }
 }

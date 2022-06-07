@@ -48,12 +48,13 @@ public class ChatActivity extends AppCompatActivity {
 
             // instantiate my custom adapter and assign it to the view
             adapter = new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
+            layoutList.setLayoutManager(new LinearLayoutManager(this));
+            Log.d("ChatActivity", "LayoutList was set on recyclerView!");
             Log.d("ChatActivity", "Will set adapter to recyclerView!");
             layoutList.setAdapter(adapter);
             Log.d("ChatActivity", "Adapter was set on recyclerView!");
 
-            layoutList.setLayoutManager(new LinearLayoutManager(this));
-            Log.d("ChatActivity", "LayoutList was set on recyclerView!");
+
         }
 
         // Insert new message on chat
