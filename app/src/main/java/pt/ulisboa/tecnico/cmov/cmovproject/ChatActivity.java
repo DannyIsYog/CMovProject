@@ -65,6 +65,7 @@ public class ChatActivity extends AppCompatActivity {
         ArrayList<ChatEntry> list = chatGroup.getEntries();
 
         // OLD CODE FOR NORMAL LIST
+        /*
         String[] msgArray = new String[list.size()];
         int i = 0;
         for (ChatEntry entry : list) {
@@ -80,15 +81,17 @@ public class ChatActivity extends AppCompatActivity {
         ListView layoutList = findViewById(R.id.chat_entries);
         layoutList.setAdapter(arr);
         // end of old code
+        */
 
-        /* new code for weird list
+
+        // new code for weird list
         RecyclerView layoutList = findViewById(R.id.chat_entries);
         layoutList.setLayoutManager(new LinearLayoutManager(this));
 
         RecyclerViewChatAdapter adapter =
                 new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
         layoutList.setAdapter(adapter);
-        */
+        //
 
     }
 

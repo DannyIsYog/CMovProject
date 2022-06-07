@@ -6,8 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity">
 
-    <!-- <androidx.recyclerview.widget.RecyclerView -->
-    <ListView
+    <!-- <ListView -->
+    <androidx.recyclerview.widget.RecyclerView
+
         android:id="@+id/chat_entries"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
