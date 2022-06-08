@@ -1,10 +1,13 @@
 package pt.ulisboa.tecnico.cmov.cmovproject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.renderscript.ScriptGroup;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,10 +28,17 @@ public class ChatPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_page);
 
-        bottomNavigationView=findViewById(R.id.bottomNav);
-        bottomNavigationView.setOnItemSelectedListener(bottomNavMethod);
 
+
+        bottomNavigationView=findViewById(R.id.bottomNav);
         topbar=findViewById(R.id.topNav);
+
+
+        Intent i = getIntent();
+        String userName = i.getStringExtra("username");
+        String pass = i.getStringExtra("password");
+
+        bottomNavigationView.setOnItemSelectedListener(bottomNavMethod);
         setSupportActionBar(topbar);
 
 

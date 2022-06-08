@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Login extends AppCompatActivity {
 
@@ -36,9 +37,18 @@ public class Login extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Login.this,ChatPage.class);
-                startActivity(intent);
-
+                String username = edtName.getText().toString();
+                String pass = edtPassword.getText().toString();
+                if(username.isEmpty() || pass.isEmpty()){
+                    Toast.makeText(Login.this, "Invalid Input", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else{
+                    Intent intent = new Intent(Login.this,ChatPage.class);
+                    intent.putExtra("username",username);
+                    intent.putExtra("password",pass);
+                    startActivity(intent);
+                }
             }
         });
 
