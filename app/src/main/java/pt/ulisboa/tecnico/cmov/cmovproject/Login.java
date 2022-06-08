@@ -1,14 +1,26 @@
 package pt.ulisboa.tecnico.cmov.cmovproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class Login extends AppCompatActivity {
 
@@ -18,6 +30,7 @@ public class Login extends AppCompatActivity {
     private TextView btnSignUp;
     private TextView btnNoLogIn;
 
+    private final OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +69,22 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        Request request =   new Request.Builder()
+                .url("http://10.0.2.2:5000/room/get/all")
+                .build();
 
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+                Log.d("Login", "onResponse " + responseBody.string());
+            }
+        });
 
     }
 }

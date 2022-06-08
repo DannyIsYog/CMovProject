@@ -245,6 +245,13 @@ def get_new_messages():
 Mainpage / Debug
 '''
 
+# ping
+
+
+@app.route('/ping', methods=['GET'])
+def ping():
+    return "pong"
+
 
 @ app.route('/')
 def hello_world():
