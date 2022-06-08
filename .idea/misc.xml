@@ -7,22 +7,24 @@
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/btn_background.xml" value="0.1525" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/chat.xml" value="0.1985" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/edt_background.xml" value="0.25" />
+        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/gradient.xml" value="0.242" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/ic_launcher_background.xml" value="0.217" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/more.xml" value="0.1985" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/plus.xml" value="0.1985" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/rectangle.xml" value="0.327" />
-        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_chat_page.xml" value="0.33" />
+        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_chat_page.xml" value="0.1" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_no_login.xml" value="0.29438405797101447" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_sign_in.xml" value="0.18802083333333333" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_sing_up.xml" value="0.33" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/chat_page.xml" value="0.36666666666666664" />
-        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/fragment_chat.xml" value="0.36666666666666664" />
+        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/fragment_chat.xml" value="0.13725490196078433" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/fragment_more.xml" value="0.36666666666666664" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/fragment_settings.xml" value="0.36666666666666664" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/hjad.xml" value="0.14870509607351712" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/menu/bottom_nav_menu.xml" value="0.33" />
+        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/menu/top_nav_menu.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/fabio/Documents/UNI/CMov/CMovProject/app/src/main/res/layout/activity_login.xml" value="0.25052083333333336" />
         <entry key="..\:/Users/fabio/Documents/UNI/CMov/CMovProject/app/src/main/res/layout/activity_main.xml" value="0.25052083333333336" />
         <entry key="..\:/Users/fabio/Documents/UNI/CMov/CMovProject/app/src/main/res/xml/network_security_config.xml" value="0.13903985507246377" />
