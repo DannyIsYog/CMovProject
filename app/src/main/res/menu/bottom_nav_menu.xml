@@ -10,8 +10,5 @@
     <item android:title="Add"
         android:icon="@drawable/plus"
         android:id="@+id/addFragment"/>
-    <item android:title="Settings"
-        android:icon="@drawable/more"
-        android:id="@+id/settingsFragment" />
 
 </menu>

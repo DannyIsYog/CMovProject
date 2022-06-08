@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,11 +9,13 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintTop_toTopOf="@id/topNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
     </FrameLayout>
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
@@ -20,13 +23,36 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:backgroundTint="@color/blue_ist"
+        app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@color/white">
-
-
-
+        app:liftOnScroll="true"
+        app:menu="@menu/bottom_nav_menu">
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:liftOnScroll="true"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            app:itemIconTint="@color/white"
+            app:menu="@menu/top_nav_menu"
+            android:id="@+id/topNav"
+            android:background="@color/blue_ist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="ConversationallIST"
+            app:titleTextColor="@color/white">
+
+
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+
+
 </RelativeLayout>
