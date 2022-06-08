@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.moshi.Moshi;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -31,7 +33,7 @@ public class Login extends AppCompatActivity {
     private TextView btnSignUp;
     private TextView btnNoLogIn;
 
-    private final OkHttpClient client = new OkHttpClient();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,23 +80,5 @@ public class Login extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        Request request =   new Request.Builder()
-                .url("http://10.0.2.2:5000/room/get/all")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                ResponseBody responseBody = response.body();
-                Log.d("Login", "onResponse " + responseBody.string());
-            }
-        });
-
     }
 }
