@@ -3,19 +3,13 @@ package pt.ulisboa.tecnico.cmov.cmovproject;
 import java.util.List;
 
 public class Room {
-    enum RoomType
-    {
-        PUBLIC,
-        PRIVATE,
-        GEO_CASED
-    }
 
     private String name;
-    private RoomType roomType;
+    private int roomType;
     private List<String> messages;
     private  List<String> users;
 
-    public Room(String name, RoomType roomType, List<String> messages, List<String> users) {
+    public Room(String name, int roomType, List<String> messages, List<String> users) {
         this.name = name;
         this.roomType = roomType;
         this.messages = messages;
@@ -30,11 +24,11 @@ public class Room {
         this.name = name;
     }
 
-    public RoomType getRoomType() {
+    public int getRoomType() {
         return roomType;
     }
 
-    public void setRoomType(RoomType type) {
+    public void setRoomType(int type) {
         this.roomType = type;
     }
 

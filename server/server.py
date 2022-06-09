@@ -5,6 +5,7 @@ from unicodedata import name
 from flask import Flask, request, jsonify
 from flask_mongoengine import MongoEngine
 from enum import Enum
+import math
 
 app = Flask(__name__)
 app.config['MONGODB_SETTINGS'] = {
@@ -36,7 +37,9 @@ class Chatroom(db.Document):
     users = db.ListField(db.ReferenceField('User'))
     messages = db.ListField(db.ReferenceField('Message'))
     roomType = db.IntField()
-    centerLocation = db.PointField()
+    # coordinates
+    latitude = db.FloatField()
+    longitude = db.FloatField()
     radius = db.FloatField()
 
     def to_json(self):
@@ -44,7 +47,11 @@ class Chatroom(db.Document):
             'name': self.name,
             'users': [user.to_json() for user in self.users],
             'messages': [message.to_json() for message in self.messages],
-            'roomType': self.roomType
+            'roomType': self.roomType,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'radius': self.radius
+
         }
 
 
@@ -52,6 +59,9 @@ class User(db.Document):
     username = db.StringField()
     password = db.StringField()
     chatrooms = db.ListField(db.ReferenceField(Chatroom))
+    # coordinates
+    latitude = db.FloatField()
+    longitude = db.FloatField()
 
     def to_json(self):
         return {"username": self.username, "password": self.password, "chatroom": self.chatroom}
@@ -81,11 +91,44 @@ def roomExists(name):
     else:
         return True
 
-# check if a user has access to a room
+# get rooms that the user is in range of using room radius
 
 
-def userHasAccess(user, room):
-    return True
+@app.route('/room/nearby', methods=['GET'])
+def getNearbyRooms():
+    user = request.args.get('user')
+    user = User.objects(username=user).first()
+    if user is None:
+        return jsonify({"error": "User does not exist"})
+    else:
+        # iterate through all geo_cased rooms
+        geo_cased_rooms = Chatroom.objects(roomType=RoomType.GEO_CASED)
+        # initialize list of nearby rooms
+        nearby_rooms = []
+        for room in geo_cased_rooms:
+            if user.latitude is not None and user.longitude is not None:
+                if room.latitude is not None and room.longitude is not None:
+                    # check if user is in range of room
+                    if distance(user.latitude, user.longitude, room.latitude, room.longitude) <= room.radius:
+                        nearby_rooms.append(room)
+        return jsonify({"rooms": [room.to_json() for room in nearby_rooms]})
+
+
+def distance(lat1, lon1, lat2, lon2):
+    R = 6371  # Radius of the earth in km
+    dLat = deg2rad(lat2 - lat1)  # deg2rad below
+    dLon = deg2rad(lon2 - lon1)
+    a = (
+        math.sin(dLat / 2) * math.sin(dLat / 2) + math.cos(deg2rad(lat1)) * math.cos(deg2rad(lat2)) * math.sin(
+            dLon / 2) * math.sin(dLon / 2)
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    # distance in meters
+    return R * c * 1000
+
+
+def deg2rad(deg):
+    return deg * (math.pi / 180)
 
 # creates a room with a given name
 
@@ -100,6 +143,12 @@ def createRoom():
         room = Chatroom(name=name, roomType=roomType)
         room.save()
         return jsonify({"status": "success", "message": "Room created"})
+
+# checks if user has access to a room
+
+
+def userHasAccess(user, room):
+    return True
 
 # user joins a room
 
@@ -156,6 +205,10 @@ def get_rooms():
 @app.route('/room/get/user', methods=['GET'])
 def get_user_rooms():
     user = User.objects.get(username=request.args.get("username"))
+    # get user coordinates from request
+    latitude = request.args.get("latitude")
+    longitude = request.args.get("longitude")
+
     rooms = Chatroom.objects(users=user)
     # get all public rooms
     public_rooms = Chatroom.objects(roomType=RoomType.PUBLIC)

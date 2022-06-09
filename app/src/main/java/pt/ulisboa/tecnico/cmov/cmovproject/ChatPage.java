@@ -75,9 +75,10 @@ public class ChatPage extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                Log.d("Response", response.body().string());
-                List rooms = adapter.fromJson(response.toString());
-                Log.d("Response", String.valueOf(rooms));
+                String resp = response.body().string();
+                Log.d("Response", resp);
+                List rooms = adapter.fromJson(resp);
+                Log.d("Response", rooms.toString());
             }
         });
 
