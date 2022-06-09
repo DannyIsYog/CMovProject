@@ -17,9 +17,30 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 public class ChatPage extends AppCompatActivity {
+
+
+    private final OkHttpClient client = new OkHttpClient();
+    private final Moshi moshi = new Moshi.Builder().build();
+
+    private final Type type = Types.newParameterizedType(List.class, Room.class);
+    private final JsonAdapter<List<Room>> adapter = moshi.adapter(type);
 
     private BottomNavigationView bottomNavigationView;
     private Toolbar topbar;
