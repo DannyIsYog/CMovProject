@@ -10,5 +10,8 @@
     <item android:title="Add"
         android:icon="@drawable/plus"
         android:id="@+id/addFragment"/>
+    <item android:title="Log Out"
+        android:icon="@drawable/log_out"
+        android:id="@+id/settingsFragment"/>
 
 </menu>

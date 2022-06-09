@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.cmovproject;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.graphics.Paint;

@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,6 +58,10 @@ public class ChatPage extends AppCompatActivity {
                 case R.id.addFragment:
                     fragment=new MoreFragment();
                     break;
+
+                case R.id.settingsFragment:
+                    Intent i = new Intent(ChatPage.this,Login.class);
+                    startActivity(i);
             }
 
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,fragment).commit();
@@ -64,13 +69,6 @@ public class ChatPage extends AppCompatActivity {
         }
     };
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-
-        getMenuInflater().inflate(R.menu.top_nav_menu, menu);
-        return true;
-
-    }
 
 
 }

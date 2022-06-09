@@ -1,47 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginHorizontal="10dp"
-    android:layout_marginTop="10dp"
-    app:cardCornerRadius="14dp"
-    app:cardBackgroundColor="@color/dark_blue_ist"
-    tools:context=".ChatFragment">
+    tools:context=".ChatFragment"
+    android:orientation="vertical">
 
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="7dp">
-        
-        <androidx.cardview.widget.CardView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            app:cardCornerRadius="70dp">
-
-            <ImageView
-                android:id="@+id/img"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="center"/>
-
-        </androidx.cardview.widget.CardView>
-
+    <!-- A CardView that contains a TextView -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/chatGroup"
+        android:layout_gravity="fill"
+        android:layout_width="match_parent"
+        android:layout_margin="30dp"
+        android:layout_height="80dp"
+        card_view:cardBackgroundColor="@color/dark_blue_ist"
+        card_view:cardCornerRadius="15sp">
         <TextView
             android:id="@+id/chatName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:layout_marginLeft="20dp"
-            android:layout_gravity="center"/>
-
-
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="22sp"
+            android:paddingTop="25sp"
+            android:paddingBottom="20sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="30dp"
+            android:gravity="left"
+            android:textColor="@color/white" />
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
-
-
-    
-
-
-</androidx.cardview.widget.CardView>
