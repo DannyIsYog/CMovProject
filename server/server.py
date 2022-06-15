@@ -5,6 +5,7 @@ from unicodedata import name
 from flask import Flask, request, jsonify
 from flask_mongoengine import MongoEngine
 from enum import Enum
+from flask_sock import Sock
 
 app = Flask(__name__)
 app.config['MONGODB_SETTINGS'] = {
@@ -15,6 +16,7 @@ app.config['MONGODB_SETTINGS'] = {
 db = MongoEngine()
 db.init_app(app)
 
+sock = Sock(app)
 '''
 Enums
 '''
@@ -65,6 +67,25 @@ class Message(db.Document):
 
     def to_json(self):
         return {"content": self.content, "user": self.user, "chatroom": self.chatroom}
+
+
+'''
+General
+'''
+# gets message from a user to a room and sends it to all users in the same room
+
+
+@sock.route('/message', methods=['POST'])
+def message():
+    data = request.get_json()
+    room = Chatroom.objects(name=data['room']).first()
+    user = User.objects(username=data['user']).first()
+    message = Message(content=data['message'], user=user, chatroom=room)
+    message.save()
+    for user in room.users:
+        user.socket.send(json.dumps(message.to_json()))
+    # return ok
+    return jsonify({"status": "ok"})
 
 
 '''
