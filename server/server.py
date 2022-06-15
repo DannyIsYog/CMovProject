@@ -169,7 +169,7 @@ def leaveRoom():
 @app.route('/room/get/all', methods=['GET'])
 def get_rooms():
     rooms = Chatroom.objects()
-    return jsonify({"rooms": [room.to_json() for room in rooms]})
+    return jsonify([room.to_json() for room in rooms])
 
 # gets rooms with a user and all public rooms
 

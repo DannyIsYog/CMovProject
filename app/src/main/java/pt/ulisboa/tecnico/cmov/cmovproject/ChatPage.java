@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.renderscript.ScriptGroup;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -63,6 +64,23 @@ public class ChatPage extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(bottomNavMethod);
         setSupportActionBar(topbar);
 
+        Request request =   new Request.Builder()
+                .url("http://10.0.2.2:5000/room/get/all")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Log.d("Response", response.body().string());
+                List rooms = adapter.fromJson(response.toString());
+                Log.d("Response", String.valueOf(rooms));
+            }
+        });
 
     }
 
