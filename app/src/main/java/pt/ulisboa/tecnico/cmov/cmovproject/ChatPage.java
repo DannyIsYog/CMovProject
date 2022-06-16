@@ -28,10 +28,13 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.WebSocket;
 
 
 public class ChatPage extends AppCompatActivity {
@@ -76,12 +79,23 @@ public class ChatPage extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                Log.d("Response", response.body().string());
-                List rooms = adapter.fromJson(response.toString());
+                String resp = response.body().string();
+                Log.d("Response", resp);
+                List rooms = adapter.fromJson(resp);
                 Log.d("Response", String.valueOf(rooms));
             }
         });
 
+        RequestBody formBody = new FormBody.Builder()
+                .add("user","testUser")
+                .build();
+        request =   new Request.Builder()
+                .url("http://10.0.2.2:5000/chat")
+                .build();
+        EchoWebSocketListener listener = new EchoWebSocketListener();
+
+        WebSocket ws = client.newWebSocket(request,listener);
+        client.dispatcher().executorService().shutdown();
     }
 
     private BottomNavigationView.OnItemSelectedListener bottomNavMethod=new BottomNavigationView.OnItemSelectedListener(){

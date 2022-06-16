@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
+from socket import socket
 from unicodedata import name
 from flask import Flask, request, jsonify
 from flask_mongoengine import MongoEngine
@@ -17,6 +18,8 @@ db = MongoEngine()
 db.init_app(app)
 
 sock = Sock(app)
+
+websockets = {}  # dict of websockets by username
 '''
 Enums
 '''
@@ -70,22 +73,43 @@ class Message(db.Document):
 
 
 '''
-General
+websockets
 '''
-# gets message from a user to a room and sends it to all users in the same room
+
+# send message back to the same user
 
 
-@sock.route('/message', methods=['POST'])
-def message():
-    data = request.get_json()
-    room = Chatroom.objects(name=data['room']).first()
+@sock.route('/chat')
+def chat(socket):
+    while True:
+        message = socket.receive()
+        socket.send(message)
+
+# start websocket connection
+
+
+@sock.route('/connect')
+def connect(socket):
+    user = User.objects(username=request.form['user']).first()
+    if user is None:
+        return jsonify({"status": "error", "message": "user not found"})
+    else:
+        websockets[user.username] = socket
+        socket.send("Connected")
+        return jsonify({"status": "ok"})
+
+# close websocket connection
+
+
+@sock.route('/disconnect')
+def disconnect(socket):
+    data = request.form['name']
     user = User.objects(username=data['user']).first()
-    message = Message(content=data['message'], user=user, chatroom=room)
-    message.save()
-    for user in room.users:
-        user.socket.send(json.dumps(message.to_json()))
-    # return ok
-    return jsonify({"status": "ok"})
+    if user is None:
+        return jsonify({"status": "error", "message": "user not found"})
+    else:
+        del websockets[user.username]
+        return jsonify({"status": "ok"})
 
 
 '''
