@@ -41,10 +41,6 @@ public class ChatPage extends AppCompatActivity {
 
 
     private final OkHttpClient client = new OkHttpClient();
-    private final Moshi moshi = new Moshi.Builder().build();
-
-    private final Type type = Types.newParameterizedType(List.class, Room.class);
-    private final JsonAdapter<List<Room>> adapter = moshi.adapter(type);
 
     private BottomNavigationView bottomNavigationView;
     private Toolbar topbar;
@@ -54,11 +50,8 @@ public class ChatPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_page);
 
-
-
         bottomNavigationView=findViewById(R.id.bottomNav);
         topbar=findViewById(R.id.topNav);
-
 
         Intent i = getIntent();
         String userName = i.getStringExtra("username");
@@ -67,29 +60,10 @@ public class ChatPage extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(bottomNavMethod);
         setSupportActionBar(topbar);
 
-        Request request =   new Request.Builder()
-                .url("http://10.0.2.2:5000/room/get/all")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                String resp = response.body().string();
-                Log.d("Response", resp);
-                List rooms = adapter.fromJson(resp);
-                Log.d("Response", String.valueOf(rooms));
-            }
-        });
-
         RequestBody formBody = new FormBody.Builder()
                 .add("user","testUser")
                 .build();
-        request =   new Request.Builder()
+        Request request =   new Request.Builder()
                 .url("http://10.0.2.2:5000/chat")
                 .build();
         EchoWebSocketListener listener = new EchoWebSocketListener();
