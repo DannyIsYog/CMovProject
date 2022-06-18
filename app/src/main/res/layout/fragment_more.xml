@@ -13,6 +13,7 @@
         android:text="Add New Chats"
         android:layout_marginTop="35dp"
         android:layout_marginLeft="40dp"
+        android:textColor="@color/black"
         android:textSize="20dp"/>
 
 </FrameLayout>

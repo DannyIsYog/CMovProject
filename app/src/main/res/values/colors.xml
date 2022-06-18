@@ -10,7 +10,9 @@
     <color name="blue_ist">#66b3ff</color>
     <color name="dark_blue_ist">#0066ff</color>
     <color name="colorAccent">#ffaaff</color>
-    <color name="colorSecondary">#f433a2ff</color>
+    <color name="navMenu">#f433a2ff</color>
+    <color name="btn_symbols">#FFFFFFFF</color>
+
 
 
 

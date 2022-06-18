@@ -17,10 +17,9 @@
         android:layout_marginBottom="30dp"
         android:background="@drawable/round_corner"
         android:elevation="2dp"
-        app:backgroundTint="@color/blue_ist"
-        app:itemIconTint="@color/white"
+        app:itemIconTint="@color/btn_symbols"
         app:itemRippleColor="@android:color/transparent"
-        app:itemTextColor="@color/white"
+        app:itemTextColor="@color/btn_symbols"
         app:layout_constraintEnd_toEndOf="parent"
         app:liftOnScroll="true"
         app:menu="@menu/bottom_nav_menu">
@@ -48,11 +47,11 @@
             app:itemIconTint="@color/white"
             app:menu="@menu/top_nav_menu"
             android:id="@+id/topNav"
-            android:background="@color/blue_ist"
+            android:background="@color/navMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="ConversationallIST"
-            app:titleTextColor="@color/white">
+            app:titleTextColor="@color/btn_symbols">
 
 
 
