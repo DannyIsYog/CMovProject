@@ -49,7 +49,7 @@
         android:background="@drawable/edt_background"
         android:paddingStart="10dp"/>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_signup"
         android:text="Create Account"
         android:layout_width="250dp"

@@ -38,7 +38,7 @@
 
 
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_continue"
         android:text="Continue"
         android:layout_width="250dp"
