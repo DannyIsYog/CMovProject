@@ -1,19 +1,34 @@
 package pt.ulisboa.tecnico.cmov.cmovproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class SingUp extends AppCompatActivity {
 
     private Button btnSignUp;
     private EditText edtName;
     private EditText edtPassword;
+
+    private final OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +50,27 @@ public class SingUp extends AppCompatActivity {
                         return;
                     }
                     else{
+                        RequestBody formBody = new FormBody.Builder()
+                                .add("username",username)
+                                .add("password", pass)
+                                .build();
+                        Request request =   new Request.Builder()
+                                .url("http://10.0.2.2:5000/user/create")
+                                .post(formBody)
+                                .build();
+
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            @Override
+                            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                                String resp = response.body().string();
+                                Log.d("Response", resp);
+                            }
+                        });
                         Intent intent = new Intent(SingUp.this,Login.class);
                         intent.putExtra("username",username);
                         intent.putExtra("password",pass);
