@@ -16,13 +16,18 @@ import android.widget.Toast;
 
 import com.squareup.moshi.Moshi;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -34,7 +39,8 @@ public class Login extends AppCompatActivity {
     private TextView btnSignUp;
     private TextView btnNoLogIn;
 
-
+    private final OkHttpClient client = new OkHttpClient();
+    private JSONObject respObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +66,49 @@ public class Login extends AppCompatActivity {
                     return;
                 }
                 else{
+                    RequestBody formBody = new FormBody.Builder()
+                            .add("username",username)
+                            .add("password", pass)
+                            .build();
+                    Request request =   new Request.Builder()
+                            .url("http://10.0.2.2:5000/user/login")
+                            .post(formBody)
+                            .build();
+
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                            String resp = response.body().string();
+                            try {
+                                respObject = new JSONObject(resp);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                Log.d("Response", respObject.getString("status"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            /* Uncomment this code to allow authentication
+                            try {
+                                if(respObject.getString("status").equals("success"))
+                                {
+                                    Intent intent = new Intent(Login.this,ChatPage.class);
+                                    intent.putExtra("username",username);
+                                    intent.putExtra("password",pass);
+                                    startActivity(intent);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }*/
+                        }
+                    });
+                    //Delete code bellow to allow authentication
                     Intent intent = new Intent(Login.this,ChatPage.class);
                     intent.putExtra("username",username);
                     intent.putExtra("password",pass);
