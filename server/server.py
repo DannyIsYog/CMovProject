@@ -210,16 +210,23 @@ def get_user_rooms():
 # deletes a room
 
 
-@app.route('/room/delete', methods=['DELETE'])
-def delete_room():
-    print(request.args.get("name"))
-    # remove chatroom from users that were in it
-    for user in User.objects():
-        user.chatrooms.remove(Chatroom.objects(
-            name=request.args.get("name")).first())
-        user.save()
-    Chatroom.objects(name=request.args.get("name")).delete()
-    return "Room {} deleted".format(request.args.get("name"))
+@app.route('/room/delete', methods=['POST'])
+def deleteRoom():
+    name = request.form['name']
+    # check if room exists
+    if not roomExists(name):
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # remove room from all users
+    users = User.objects()
+    for user in users:
+        # check if user is in room
+        if user.chatrooms.filter(name=name).count() > 0:
+            room = Chatroom.objects(name=name).first()
+            user.chatrooms.remove(room)
+            user.save()
+    # delete room
+    Chatroom.objects(name=name).delete()
+    return jsonify({"status": "success", "message": "Room deleted"})
 
 
 '''
@@ -228,27 +235,41 @@ Users
 # creates a user
 
 
-@app.route('/user/create', methods=['PUT'])
+@app.route('/user/create', methods=['POST'])
 def create_user():
-    print(request.args.get("username"))
-    print(request.args.get("password"))
-    User(username=request.args.get("username"),
-         password=request.args.get("password")).save()
-    return "User {} created".format(request.args.get("username"))
+    username = request.form["username"]
+    password = request.form["password"]
+    print(username)
+    print(password)
+    if User.objects(username=username).first() is not None:
+        return jsonify({"status": "error", "message": "User already exists"})
+    User(username=username,
+         password=password).save()
+    return "User {} created".format(username)
 
 # delete user
 
 
 @app.route('/user/delete', methods=['DELETE'])
 def delete_user():
-    print(request.args.get("username"))
+    username = request.form["username"]
+    password = request.form["password"]
+
+    # check if user exists
+    if User.objects(username=username).first() is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if password is correct
+    if User.objects(username=username).first().password != password:
+        return jsonify({"status": "error", "message": "Password is incorrect"})
     # remove user from all rooms
     for room in Chatroom.objects():
-        room.users.remove(User.objects(
-            username=request.args.get("username")).first())
-        room.save()
-    User.objects(username=request.args.get("username")).delete()
-    return "User {} deleted".format(request.args.get("username"))
+        # check if user is in room
+        if room.users.filter(username=username).count() > 0:
+            room.users.remove(User.objects(username=username).first())
+            room.save()
+    # delete user
+    User.objects(username=username).delete()
+    return "User {} deleted".format(username)
 
 
 '''
@@ -258,32 +279,28 @@ Messages
 # user sends message to room
 
 
-@app.route('/message/send', methods=['PUT'])
+@app.route('/message/send', methods=['POST'])
 def send_message():
-    print(request.args.get("username"))
-    print(request.args.get("message"))
-    print(request.args.get("chatroom"))
-    user = User.objects.get(username=request.args.get("username"))
-    chatroom = Chatroom.objects.get(name=request.args.get("chatroom"))
-    message = Message(content=request.args.get("message"),
-                      user=user,
-                      chatroom=chatroom,
-                      id=len(chatroom.messages) + 1)
-    message.save()
-    chatroom.messages.append(message)
-    chatroom.save()
-    return "Message {} sent to room {}".format(request.args.get("message"), request.args.get("chatroom"))
-
-
-# get new messages sent to a room since last message
-
-
-@app.route('/message/get/new', methods=['GET'])
-def get_new_messages():
-    chatroom = Chatroom.objects.get(name=request.args.get("name"))
-    last_message = Message.objects.get(
-        content=request.args.get("last_message"))
-    return jsonify({"messages": [message.to_json() for message in chatroom.messages if message.id > last_message.id]})
+    room = request.form['room']
+    user = request.form['user']
+    message = request.form['message']
+    # check if room exists
+    if not roomExists(room):
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    if User.objects(username=user).first() is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user has access to room
+    if not userHasAccess(user, Chatroom.objects(name=room).first()):
+        return jsonify({"status": "error", "message": "User does not have access to room"})
+    # check if user is in room
+    if User.objects(username=user).first().chatrooms.filter(name=room).count() == 0:
+        return jsonify({"status": "error", "message": "User not in room"})
+    room = Chatroom.objects(name=room).first()
+    user = User.objects(username=user).first()
+    room.messages.append(Message(user=user, message=message))
+    room.save()
+    return jsonify({"status": "success", "message": "Message sent"})
 
 
 '''
