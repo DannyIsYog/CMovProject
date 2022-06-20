@@ -271,6 +271,21 @@ def delete_user():
     User.objects(username=username).delete()
     return "User {} deleted".format(username)
 
+# user login
+
+
+@app.route('/user/login', methods=['POST'])
+def login():
+    username = request.form["username"]
+    password = request.form["password"]
+    # check if user exists
+    if User.objects(username=username).first() is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if password is correct
+    if User.objects(username=username).first().password != password:
+        return jsonify({"status": "error", "message": "Password is incorrect"})
+    return jsonify({"status": "success", "message": "User logged in"})
+
 
 '''
 Messages
