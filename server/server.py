@@ -126,11 +126,6 @@ def roomExists(name):
     else:
         return True
 
-# check if a user has access to a room
-
-
-def userHasAccess(user, room):
-    return True
 
 # creates a room with a given name
 
@@ -153,20 +148,24 @@ def createRoom():
 def joinRoom():
     name = request.form['name']
     user = request.form['user']
-    if roomExists(name):
-        # check if user has access to room
-        if not userHasAccess(user, Chatroom.objects(name=name).first()):
-            return jsonify({"status": "error", "message": "User does not have access to room"})
-        # check if user is already in room
-        if User.objects(username=user).first().chatrooms.filter(name=name).count() > 0:
-            return jsonify({"status": "error", "message": "User already in room"})
-        room = Chatroom.objects(name=name).first()
-        user = User.objects(username=user).first()
-        room.users.append(user)
-        room.save()
-        return jsonify({"status": "success", "message": "User joined room"})
-    else:
+    # check if room exists
+    room = Chatroom.objects(name=name).first()
+    if room is None:
         return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    user = User.objects(username=user).first()
+    if user is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user is already in room
+    if user in room.users:
+        return jsonify({"status": "error", "message": "User is already in room"})
+    # add user to room
+    room.users.append(user)
+    room.save()
+    # add room to user
+    user.chatrooms.append(room)
+    user.save()
+    return jsonify({"status": "success", "message": "User joined room"})
 
 # user leaves a room
 
@@ -175,17 +174,24 @@ def joinRoom():
 def leaveRoom():
     name = request.form['name']
     user = request.form['user']
-    if roomExists(name):
-        # check if user is not in room
-        if User.objects(username=user).first().chatrooms.filter(name=name).count() == 0:
-            return jsonify({"status": "error", "message": "User not in room"})
-        room = Chatroom.objects(name=name).first()
-        user = User.objects(username=user).first()
-        room.users.remove(user)
-        room.save()
-        return jsonify({"status": "success", "message": "User left room"})
-    else:
+    # check if room exists
+    room = Chatroom.objects(name=name).first()
+    if room is None:
         return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    user = User.objects(username=user).first()
+    if user is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user is in room
+    if user not in room.users:
+        return jsonify({"status": "error", "message": "User is not in room"})
+    # remove user from room
+    room.users.remove(user)
+    room.save()
+    # remove room from user
+    user.chatrooms.remove(room)
+    user.save()
+    return jsonify({"status": "success", "message": "User left room"})
 
 # gets all rooms
 
@@ -195,17 +201,19 @@ def get_rooms():
     rooms = Chatroom.objects()
     return jsonify([room.to_json() for room in rooms])
 
-# gets rooms with a user and all public rooms
+# get all rooms of a user
 
 
-@app.route('/room/get/user', methods=['GET'])
+@app.route('/room/get/user', methods=['POST'])
 def get_user_rooms():
-    user = User.objects.get(username=request.args.get("username"))
-    rooms = Chatroom.objects(users=user)
-    # get all public rooms
-    public_rooms = Chatroom.objects(roomType=RoomType.PUBLIC)
-    rooms = rooms + public_rooms
-    return jsonify({"rooms": [room.to_json() for room in rooms]})
+    user = request.form['user']
+    # check if user exists
+    user = User.objects(username=user).first()
+    if user is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # get all rooms of user
+    rooms = user.chatrooms
+    return jsonify([room.to_json() for room in rooms])
 
 # deletes a room
 
@@ -271,6 +279,16 @@ def delete_user():
     User.objects(username=username).delete()
     return "User {} deleted".format(username)
 
+# check if password is correct
+
+
+def checkPassword(username, password):
+    user = User.objects(username=username).first()
+    if user is None:
+        return False
+    else:
+        return user.password == password
+
 # user login
 
 
@@ -282,7 +300,7 @@ def login():
     if User.objects(username=username).first() is None:
         return jsonify({"status": "error", "message": "User does not exist"})
     # check if password is correct
-    if User.objects(username=username).first().password != password:
+    if not checkPassword(username, password):
         return jsonify({"status": "error", "message": "Password is incorrect"})
     return jsonify({"status": "success", "message": "User logged in"})
 
