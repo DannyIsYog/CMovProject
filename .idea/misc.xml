@@ -14,7 +14,7 @@
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/rectangle.xml" value="0.327" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/drawable/round_corner.xml" value="0.1435" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_chat_page.xml" value="0.25" />
-        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_login.xml" value="0.33" />
+        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_login.xml" value="0.1" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_no_login.xml" value="0.29438405797101447" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/activity_sign_in.xml" value="0.18802083333333333" />
@@ -23,6 +23,7 @@
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/fragment_chat.xml" value="0.33" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/fragment_more.xml" value="0.36666666666666664" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/fragment_settings.xml" value="0.36666666666666664" />
+        <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/frame_groupview.xml" value="0.36666666666666664" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/layout/hjad.xml" value="0.14870509607351712" />
         <entry key="..\:/IST/3 Ano/P4/CMov/Project/CMovProject/app/src/main/res/menu/bottom_nav_menu.xml" value="0.33" />
         <entry key="..\:/Users/fabio/Documents/UNI/CMov/CMovProject/app/src/main/res/layout/activity_chat_page.xml" value="0.13903985507246377" />
