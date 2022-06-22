@@ -34,4 +34,8 @@ public class ChatEntry implements Serializable {
     public String toString(){
         return "ENTRY: { username : "+username+" msg : "+msg.getText().toString()+" }";
     }
+
+    public static ChatEntry getEmptyEntry() {
+        return new ChatEntry("empty", "empty");
+    }
 }

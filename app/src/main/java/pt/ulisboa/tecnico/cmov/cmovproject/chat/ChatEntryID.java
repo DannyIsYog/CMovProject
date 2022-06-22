@@ -22,4 +22,7 @@ public class ChatEntryID {
                 &&
                 this.chatEntryIdx.equals(otherEntry.chatEntryIdx);
     }
+
+    public String getGroupID() { return this.chatGroupID; }
+    public String getMsgID() { return this.chatEntryIdx.toString(); }
 }

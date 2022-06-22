@@ -311,7 +311,6 @@ Messages
 
 # user sends message to room
 
-
 @app.route('/message/send', methods=['POST'])
 def send_message():
     room = request.form['room']
@@ -334,6 +333,40 @@ def send_message():
     room.messages.append(Message(user=user, message=message))
     room.save()
     return jsonify({"status": "success", "message": "Message sent"})
+
+
+
+@app.route('/message/get', methods=['POST'])
+def get_message():
+    room = request.form['room']
+    user = request.form['user']
+    msgID = request.form['msgID']
+    
+    # check if room exists
+    if not roomExists(room):
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    if User.objects(username=user).first() is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user has access to room
+    if not userHasAccess(user, Chatroom.objects(name=room).first()):
+        return jsonify({"status": "error", "message": "User does not have access to room"})
+    # check if user is in room
+    if User.objects(username=user).first().chatrooms.filter(name=room).count() == 0:
+        return jsonify({"status": "error", "message": "User not in room"})
+
+    roomObj = Chatroom.objects(name=room).first()
+    if (len(roomObj.messages) - 1) < msgID:
+        return jsonify({"status": "error", "message": f"Group {room} hasn't message with ID {msgID}" })
+
+    msgObj = roomObj.messages[msgID]
+    return jsonify(
+        {
+        "status": "success", 
+        "message": "Message - GET",
+        "user": msgObj.user,
+        "content": msgObj.content, 
+        })
 
 
 '''
