@@ -74,16 +74,21 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 Log.d("Response", String.valueOf(rooms));
 
                 //create recycleview
-                recyclerView = rootView.findViewById(R.id.recycler);
-                recyclerView .setHasFixedSize(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-                recyclerView.setAdapter(new GroupListAdapter(rooms));
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        recyclerView = rootView.findViewById(R.id.recycler);
+                        recyclerView .setHasFixedSize(true);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+                        recyclerView.setAdapter(new GroupListAdapter(rooms));
+                    }
+                });
             }
         });
 
         //groupChatName = (CardView) rootView.findViewById(R.id.chatGroup);
         //groupChatName.setOnClickListener(this);
-
 
         return  rootView;
     }
