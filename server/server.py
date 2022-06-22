@@ -203,10 +203,10 @@ def joinRoom():
     if user is None:
         return jsonify({"status": "error", "message": "User does not exist"})
     # check if user is in room
-    if user in Chatroom.objects(name=room).first().users:
+    if user in room.users:
         return jsonify({"status": "error", "message": "User is already in room"})
     # add user to room
-    Chatroom.objects.get(name=room).update(push__users=user)
+    room.update(push__users=user)
     # add room to user
     print(room.to_json())
     print(user.to_json())
