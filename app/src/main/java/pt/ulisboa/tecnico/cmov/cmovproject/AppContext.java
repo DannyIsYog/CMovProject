@@ -51,7 +51,7 @@ public class AppContext extends Application {
                     res = downloadChatEntry(key);
                 } catch (IOException de) {
                     // had problem downloading chat, show empty for now
-                    res = ChatEntry.getEmptyEntry();
+                    return ChatEntry.getEmptyEntry();
                 }
                 // store new value in cache
                 chatEntryLruCache.put(key, res);
