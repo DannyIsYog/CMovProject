@@ -40,7 +40,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     private final Type type = Types.newParameterizedType(List.class, Room.class);
     private final JsonAdapter<List<Room>> adapter = moshi.adapter(type);
 
-    //private CardView groupChatName;
 
     private RecyclerView recyclerView;
 
@@ -87,8 +86,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        //groupChatName = (CardView) rootView.findViewById(R.id.chatGroup);
-        //groupChatName.setOnClickListener(this);
+
 
         return  rootView;
     }

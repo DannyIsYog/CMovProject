@@ -104,7 +104,6 @@ public class Login extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            /* Uncomment this code to allow authentication
                             try {
                                 if(respObject.getString("status").equals("success"))
                                 {
@@ -113,9 +112,22 @@ public class Login extends AppCompatActivity {
                                     intent.putExtra("password",pass);
                                     startActivity(intent);
                                 }
+                                else
+                                {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                Toast.makeText(getApplicationContext(), respObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                            }*/
+                            }
                         }
                     });
 

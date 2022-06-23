@@ -344,10 +344,10 @@ def login():
     password = request.form["password"]
     # check if user exists
     if User.objects(username=username).first() is None:
-        return jsonify({"status": "error", "message": "User does not exist"})
+        return jsonify({"status": "error", "message": "User or Password is incorrect"})
     # check if password is correct
     if not checkPassword(username, password):
-        return jsonify({"status": "error", "message": "Password is incorrect"})
+        return jsonify({"status": "error", "message": "User or Password is incorrect"})
     return jsonify({"status": "success", "message": "User logged in"})
 
 

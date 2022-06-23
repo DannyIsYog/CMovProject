@@ -44,6 +44,7 @@ public class ChatPage extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private Toolbar topbar;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +55,15 @@ public class ChatPage extends AppCompatActivity {
         topbar=findViewById(R.id.topNav);
 
         Intent i = getIntent();
-        String userName = i.getStringExtra("username");
+        userName = i.getStringExtra("username");
         String pass = i.getStringExtra("password");
 
         bottomNavigationView.setOnItemSelectedListener(bottomNavMethod);
         setSupportActionBar(topbar);
 
         RequestBody formBody = new FormBody.Builder()
-                .add("user","testUser")
+                .add("user",userName)
+                .add("password", pass)
                 .build();
         Request request =   new Request.Builder()
                 .url("http://10.0.2.2:5000/chat")
@@ -97,6 +99,9 @@ public class ChatPage extends AppCompatActivity {
     };
 
 
+    public String getUserName(){
+        return userName;
+    }
 
 }
 
