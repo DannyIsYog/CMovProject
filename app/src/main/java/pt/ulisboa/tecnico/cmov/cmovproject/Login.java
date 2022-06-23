@@ -50,10 +50,12 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // GO TO CHAT TO DEBUG
-        // TODO: DELETE THIS WHEN NEEDED
-        Intent intent = new Intent(Login.this,ChatActivity.class);
-        startActivity(intent);
-
+        // TODO: CHANGE THIS IF NEEDED (debug chat activity)
+        boolean GO_TO_CHAT = false;
+        if (GO_TO_CHAT) {
+            Intent intent = new Intent(Login.this, ChatActivity.class);
+            startActivity(intent);
+        }
 
         edtName = findViewById(R.id.edt_name);
         edtPassword = findViewById(R.id.edt_password);

@@ -67,7 +67,7 @@ class Message(db.Document):
     content = db.StringField()
     user = db.ReferenceField(User)
     chatroom = db.ReferenceField(Chatroom)
-    id = db.IntField()
+    #id = db.IntField()
 
     def to_json(self):
         return {"content": self.content, "user": self.user, "chatroom": self.chatroom}
@@ -364,8 +364,8 @@ def userHasAccess(user, param):
 
 @app.route('/message/send', methods=['POST'])
 def send_message():
-    room = request.form['room']
-    user = request.form['user']
+    room = request.form['chatroom']
+    user = request.form['username']
     message = request.form['message']
     # check if room exists
     if not roomExists(room):
@@ -377,20 +377,24 @@ def send_message():
     if not userHasAccess(user, Chatroom.objects(name=room).first()):
         return jsonify({"status": "error", "message": "User does not have access to room"})
     # check if user is in room
-    if User.objects(username=user).first().chatrooms.filter(name=room).count() == 0:
+    roomObj = Chatroom.objects(name=room).first()
+    userObj = User.objects(username=user).first()
+    if userObj not in roomObj.users:
         return jsonify({"status": "error", "message": "User not in room"})
-    room = Chatroom.objects(name=room).first()
-    user = User.objects(username=user).first()
-    room.messages.append(Message(user=user, message=message))
-    room.save()
+
+    msgObj = Message(user=userObj, content=message)
+    msgObj.save()
+
+    roomObj.update(push__messages=msgObj.to_dbref())
+    roomObj.save()
     return jsonify({"status": "success", "message": "Message sent"})
 
 
 
 @app.route('/message/get', methods=['POST'])
 def get_message():
-    room = request.form['room']
-    user = request.form['user']
+    room = request.form['chatroom']
+    user = request.form['username']
     msgID = request.form['msgID']
     
     # check if room exists
@@ -403,22 +407,54 @@ def get_message():
     if not userHasAccess(user, Chatroom.objects(name=room).first()):
         return jsonify({"status": "error", "message": "User does not have access to room"})
     # check if user is in room
-    if User.objects(username=user).first().chatrooms.filter(name=room).count() == 0:
+    roomObj = Chatroom.objects(name=room).first()
+    userObj = User.objects(username=user).first()
+    if userObj not in roomObj.users:
         return jsonify({"status": "error", "message": "User not in room"})
 
-    roomObj = Chatroom.objects(name=room).first()
-    if (len(roomObj.messages) - 1) < msgID:
+    if (len(roomObj.messages) - 1) < int(msgID):
         return jsonify({"status": "error", "message": f"Group {room} hasn't message with ID {msgID}" })
 
-    msgObj = roomObj.messages[msgID]
+    msgObj = roomObj.messages[int(msgID)]
     return jsonify(
         {
         "status": "success", 
         "message": "Message - GET",
-        "user": msgObj.user,
-        "content": msgObj.content, 
+        "username": msgObj.user.username,
+        "message": msgObj.content, 
         })
 
+# return the last existing msgID in a groupChat
+@app.route('/message/getLastID', methods=['POST'])
+def get_last_message_id():
+    room = request.form['chatroom']
+    user = request.form['username']
+    pwd = request.form['password']
+    
+    # check if room exists
+    if not roomExists(room):
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    if User.objects(username=user).first() is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user has access to room
+    if not userHasAccess(user, Chatroom.objects(name=room).first()):
+        return jsonify({"status": "error", "message": "User does not have access to room"})
+    # check if user is in room
+    roomObj = Chatroom.objects(name=room).first()
+    userObj = User.objects(username=user).first()
+    if userObj not in roomObj.users:
+        return jsonify({"status": "error", "message": "User not in room"})
+
+    roomObj = Chatroom.objects(name=room).first()
+    
+    print(roomObj)
+
+    return jsonify(
+        {
+        "status": "success", 
+        "message": len(roomObj.messages)
+        })
 
 '''
 Mainpage / Debug

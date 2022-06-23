@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.cmovproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,16 +16,22 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import pt.ulisboa.tecnico.cmov.cmovproject.chat.*;
 import pt.ulisboa.tecnico.cmov.cmovproject.chat.message.Message;
+import pt.ulisboa.tecnico.cmov.cmovproject.chat.message.TextMessage;
 import pt.ulisboa.tecnico.cmov.cmovproject.chat.recycler.RecyclerViewChatAdapter;
 
 public class ChatActivity extends AppCompatActivity {
@@ -58,15 +65,18 @@ public class ChatActivity extends AppCompatActivity {
                 "ERROR: USERNAME OR PASSWORD COULDN'T BE RETRIEVED FROM SHARED PREFERENCES");
         }
 
-        // show messages
-        //updateShowMessages();
+
 
         // new code for weird recycle list
 
         RecyclerView layoutList = findViewById(R.id.chat_entries);
 
         // instantiate my custom adapter and assign it to the view
-        adapter = new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
+        adapter = new RecyclerViewChatAdapter(ChatActivity.this,
+                this.appContext,
+                this.groupID,
+                this.myUsername,
+                this.myPwd);
         layoutList.setLayoutManager(new LinearLayoutManager(this));
         Log.d("ChatActivity", "LayoutList was set on recyclerView!");
         Log.d("ChatActivity", "Will set adapter to recyclerView!");
@@ -87,13 +97,17 @@ public class ChatActivity extends AppCompatActivity {
 
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
                     // enter detected, lets add string to list
-                    addEntry(getNewEntry());
+                    //addEntry(getNewEntry()); OLD CODE
+                    sendMessage(getNewEntry().getMsg());
 
                     Log.d("ChatActivity : OnKey","list = "+chatGroup.getEntries().toString());
                 }
                 return false;
             }
         });
+
+        // show existing messages
+        updateShowMessages();
 
 
     }
@@ -124,8 +138,8 @@ public class ChatActivity extends AppCompatActivity {
         final JSONObject[] respObject = new JSONObject[1];
 
         RequestBody reqBody = new FormBody.Builder()
-                .add("room", groupID)
-                .add("user", myUsername)
+                .add("chatroom", groupID)
+                .add("username", myUsername)
                 .add("password", myPwd)
                 .add("message", msg.getText())
 
@@ -135,5 +149,34 @@ public class ChatActivity extends AppCompatActivity {
                 .url(AppContext.SERVER_ADDR+"/message/send")
                 .post(reqBody)
                 .build();
+
+        client.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String resp = response.body().string();
+                try {
+                    respObject[0] = new JSONObject(resp);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    throw new IOException(e);
+                }
+                try {
+                    Log.d("ChatActivity - Response", respObject[0].getString("status"));
+                    if (!respObject[0].getString("status").equals("success")) {
+                        throw new IOException("ERROR SENDING MESSAGE");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    throw new IOException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                Log.d("AppContext", e.getMessage());
+            }
+        });
+        updateShowMessages();
     }
 }
