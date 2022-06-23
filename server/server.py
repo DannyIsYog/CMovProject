@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify
 from flask_mongoengine import MongoEngine
 from enum import Enum
 from flask_sock import Sock
+import json
 
 app = Flask(__name__)
 app.config['MONGODB_SETTINGS'] = {
@@ -47,8 +48,8 @@ class Chatroom(db.Document):
     def to_json(self):
         return {
             'name': self.name,
-            'users': [user.to_json() for user in self.users],
-            'messages': [message.to_json() for message in self.messages],
+            'users': [],
+            'messages': [],
             'roomType': self.roomType
         }
 
@@ -56,10 +57,10 @@ class Chatroom(db.Document):
 class User(db.Document):
     username = db.StringField()
     password = db.StringField()
-    chatrooms = db.ListField(db.ReferenceField(Chatroom))
+    chatrooms = db.ListField(db.ReferenceField('Chatroom'))
 
     def to_json(self):
-        return {"username": self.username, "password": self.password, "chatroom": self.chatroom}
+        return {"username": self.username, "password": self.password, "chatroom": self.chatrooms}
 
 
 class Message(db.Document):
@@ -73,17 +74,61 @@ class Message(db.Document):
 
 
 '''
+Message Structure
+{
+    "username": "",
+    "password": "",
+    "chatroom": "",
+    "message": ""
+    "contentType": ""
+}
+'''
+
+'''
 websockets
 '''
 
-# send message back to the same user
+# recieve a message from a user and send it to all users in the room
 
 
-@sock.route('/chat')
-def chat(socket):
-    while True:
-        message = socket.receive()
-        socket.send(message)
+@sock.route('/message')
+def message(ws):
+    data = ws.receive()
+    data = json.loads(data)
+    username = data['username']
+    password = data['password']
+    room = data['room']
+    message = data['message']
+    contentType = data['contentType']
+    # check if user exists
+    # get user
+    user = User.objects(username=username).first()
+    if user is None:
+        ws.send(json.dumps({'error': 'User does not exist'}))
+        return
+    # check if password is correct
+    if not checkPassword(username, password):
+        ws.send(json.dumps({'error': 'Password is incorrect'}))
+        return
+    # check if room exists
+    if not roomExists(room):
+        ws.send(json.dumps({'error': 'Room does not exist'}))
+        return
+    # check if user is in room
+    if user not in Chatroom.objects(name=room).first().users:
+        ws.send(json.dumps({'error': 'User is not in room'}))
+        return
+    # create message
+    message = Message(content=message, user=user, chatroom=Chatroom.objects(
+        name=room).first(), id=len(Chatroom.objects(name=room).first().messages)).save()
+    # append message to room
+    Chatroom.objects(name=room).first().messages.append(message).save()
+    # send message to all users in room
+    for user in Chatroom.objects(name=room).first().users:
+        # send message to user by websocket in websockets dict
+        websockets[user.username].send(
+            json.dumps({'message': message.to_json()}))
+
 
 # start websocket connection
 
@@ -91,6 +136,7 @@ def chat(socket):
 @sock.route('/connect')
 def connect(socket):
     user = User.objects(username=request.form['user']).first()
+    print(user)
     if user is None:
         return jsonify({"status": "error", "message": "user not found"})
     else:
@@ -146,25 +192,25 @@ def createRoom():
 
 @app.route('/room/join', methods=['POST'])
 def joinRoom():
-    name = request.form['name']
+    room = request.form['room']
     user = request.form['user']
     # check if room exists
-    room = Chatroom.objects(name=name).first()
-    if room is None:
+    if not roomExists(room):
         return jsonify({"status": "error", "message": "Room does not exist"})
     # check if user exists
     user = User.objects(username=user).first()
+    room = Chatroom.objects(name=room).first()
     if user is None:
         return jsonify({"status": "error", "message": "User does not exist"})
-    # check if user is already in room
+    # check if user is in room
     if user in room.users:
         return jsonify({"status": "error", "message": "User is already in room"})
     # add user to room
-    room.users.append(user)
-    room.save()
+    room.update(push__users=user)
     # add room to user
-    user.chatrooms.append(room)
-    user.save()
+    print(room.to_json())
+    print(user.to_json())
+    user.update(push__chatrooms=room)
     return jsonify({"status": "success", "message": "User joined room"})
 
 # user leaves a room
@@ -310,6 +356,11 @@ Messages
 '''
 
 # user sends message to room
+
+
+def userHasAccess(user, param):
+    return True
+
 
 @app.route('/message/send', methods=['POST'])
 def send_message():
