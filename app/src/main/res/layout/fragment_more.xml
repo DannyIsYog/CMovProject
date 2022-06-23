@@ -24,7 +24,7 @@
         android:layout_width="400dp"
         android:layout_height="200dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="290dp"
+        android:layout_marginTop="270dp"
         android:textColor="@color/btn_symbols"
         android:background="@drawable/btn_join_create_group"
         android:text="Join Group"

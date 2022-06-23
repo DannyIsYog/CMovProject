@@ -44,6 +44,7 @@ public class ChatPage extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private Toolbar topbar;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class ChatPage extends AppCompatActivity {
         topbar=findViewById(R.id.topNav);
 
         Intent i = getIntent();
-        String userName = i.getStringExtra("username");
+        userName = i.getStringExtra("username");
         String pass = i.getStringExtra("password");
 
         bottomNavigationView.setOnItemSelectedListener(bottomNavMethod);
@@ -97,6 +98,9 @@ public class ChatPage extends AppCompatActivity {
     };
 
 
+    public String getUserName(){
+        return userName;
+    }
 
 }
 
