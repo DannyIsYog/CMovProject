@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +48,12 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // GO TO CHAT TO DEBUG
+        // TODO: DELETE THIS WHEN NEEDED
+        Intent intent = new Intent(Login.this,ChatActivity.class);
+        startActivity(intent);
+
 
         edtName = findViewById(R.id.edt_name);
         edtPassword = findViewById(R.id.edt_password);
@@ -108,6 +116,15 @@ public class Login extends AppCompatActivity {
                             }*/
                         }
                     });
+
+                    // put username and passwd in shared preferences
+                    SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("username", username);
+                    editor.putString("password", pass);
+                    editor.apply();
+
+
                     //Delete code bellow to allow authentication
                     Intent intent = new Intent(Login.this,ChatPage.class);
                     intent.putExtra("username",username);

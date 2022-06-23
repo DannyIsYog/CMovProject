@@ -59,7 +59,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
         return (null != entries ? entries.size() : 0);
     }
 
-    class CustomViewHolder extends RecyclerView.ViewHolder {
+    static class CustomViewHolder extends RecyclerView.ViewHolder {
 
         protected TextView usernameView;
         protected TextView msgTextView;

@@ -5,6 +5,8 @@
       <map>
         <entry key="..\:/miguel/trabalhos/gitRepos/cmovProj/CMovProject/app/src/main/res/layout/activity_chat.xml" value="0.1" />
         <entry key="..\:/miguel/trabalhos/gitRepos/cmovProj/CMovProject/app/src/main/res/layout/chat_entry_row.xml" value="0.2" />
+        <entry key="..\:/miguel/trabalhos/gitRepos/cmovProj/CMovProject/app/src/main/res/layout/fragment_chat.xml" value="0.25" />
+        <entry key="..\:/miguel/trabalhos/gitRepos/cmovProj/CMovProject/app/src/main/res/layout/fragment_more.xml" value="0.1" />
       </map>
     </option>
   </component>

@@ -6,6 +6,9 @@ import android.util.LruCache;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+// *****************************************
+// **** NOT SUPPOSED TO BE USED ANYMORE ****
+// *****************************************
 // encapsulates all the info about a Group chat
 public class ChatGroup implements Serializable {
     private ArrayList<ChatEntry> entries;
@@ -22,12 +25,6 @@ public class ChatGroup implements Serializable {
                 return value.getByteCount();
             }
         };
-        /*
-        synchronized (chatEntryLruCache) {
-            if (chatEntryLruCache.get(key) == null) {
-                chatEntryLruCache.put(key, value);
-            }
-        } */
 
         entries = new ArrayList<>();
     }

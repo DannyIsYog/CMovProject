@@ -26,10 +26,14 @@ import java.io.IOException;
 
 // has a LRU cache with messages, abstracts the access to cache and download from server
 public class AppContext extends Application {
-    public static final String SERVER_ADDR = "http://127.0.0.1:5000";
+    public static final String SERVER_ADDR = "http://10.0.2.2:5000";
+    public static final String SHARED_PREFERENCES = "shared_preferences_cmu";
     private LruCache<ChatEntryID, ChatEntry> chatEntryLruCache;
 
-    public AppContext() {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("AppContext", "create()");
         int CACHE_SIZE = 4 * 1024 * 1024; // 4MiB
 
         this.chatEntryLruCache = new LruCache<ChatEntryID, ChatEntry>(CACHE_SIZE) {
@@ -37,7 +41,13 @@ public class AppContext extends Application {
                 return value.getByteCount();
             }
         };
+    }
 
+    @Override
+    // Receiving the request, we'll clean the cache
+    public void onLowMemory() {
+        super.onLowMemory();
+        chatEntryLruCache.evictAll();
     }
 
     public ChatEntry getChatEntry(ChatEntryID key) {

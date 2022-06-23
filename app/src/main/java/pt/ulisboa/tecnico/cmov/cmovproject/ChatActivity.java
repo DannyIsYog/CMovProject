@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.LruCache;
@@ -13,19 +15,26 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import pt.ulisboa.tecnico.cmov.cmovproject.chat.*;
+import pt.ulisboa.tecnico.cmov.cmovproject.chat.message.Message;
 import pt.ulisboa.tecnico.cmov.cmovproject.chat.recycler.RecyclerViewChatAdapter;
 
 public class ChatActivity extends AppCompatActivity {
     private ChatGroup chatGroup;
     private String myUsername;
+    private String myPwd;
+    private String groupID;
     private EditText et;
     private RecyclerViewChatAdapter adapter;
-
-    // if you change this you have to change the list type in activity_chat.xml too
-    private Boolean USE_OLD_LIST = false;
+    private AppContext appContext;
 
 
     @Override
@@ -33,29 +42,36 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         Log.d("ChatActivity","ENTERED CHAT_ACTIVITY" );
-        // TODO: get group from the other activity, for now use hard coded one
-        // TODO: same but for username
+
+        this.appContext = (AppContext) getApplicationContext();
+        SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+
         this.chatGroup = new ChatGroup();
-        this.myUsername = "Broccoli";
+        //this.groupID = savedInstanceState.getString("groupID"); // TODO: change to this
+        this.groupID = "myGroup";
+
+        this.myUsername = sharedPref.getString("username", "MR. NOBODY");
+        this.myPwd = sharedPref.getString("password", "I HAVE NO PASSOWRD");
+
+        if (myPwd == null || myUsername == null) {
+            Log.d("ChatActivity - create()",
+                "ERROR: USERNAME OR PASSWORD COULDN'T BE RETRIEVED FROM SHARED PREFERENCES");
+        }
 
         // show messages
         //updateShowMessages();
 
-        if (!USE_OLD_LIST) {
-            // new code for weird recycle list
+        // new code for weird recycle list
 
-            RecyclerView layoutList = findViewById(R.id.chat_entries);
+        RecyclerView layoutList = findViewById(R.id.chat_entries);
 
-            // instantiate my custom adapter and assign it to the view
-            adapter = new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
-            layoutList.setLayoutManager(new LinearLayoutManager(this));
-            Log.d("ChatActivity", "LayoutList was set on recyclerView!");
-            Log.d("ChatActivity", "Will set adapter to recyclerView!");
-            layoutList.setAdapter(adapter);
-            Log.d("ChatActivity", "Adapter was set on recyclerView!");
-
-
-        }
+        // instantiate my custom adapter and assign it to the view
+        adapter = new RecyclerViewChatAdapter(ChatActivity.this, this.chatGroup);
+        layoutList.setLayoutManager(new LinearLayoutManager(this));
+        Log.d("ChatActivity", "LayoutList was set on recyclerView!");
+        Log.d("ChatActivity", "Will set adapter to recyclerView!");
+        layoutList.setAdapter(adapter);
+        Log.d("ChatActivity", "Adapter was set on recyclerView!");
 
         // Insert new message on chat
         et = findViewById(R.id.new_chat_entry);
@@ -83,36 +99,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void updateShowMessages(){
-        ArrayList<ChatEntry> list = chatGroup.getEntries();
 
-        if (USE_OLD_LIST) {
-            // OLD CODE FOR NORMAL LIST
-            //
-            String[] msgArray = new String[list.size()];
-            int i = 0;
-            for (ChatEntry entry : list) {
-                msgArray[i++] = entry.getUsername() + " said: " + entry.getMsg().getText();
-            }
-
-            Log.d("ChatActivity", "update: msgArray = "+String.valueOf(msgArray.toString()));
-
-            // put array adapter on R.id.todo_list
-            ArrayAdapter<String> arr =
-                    new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, msgArray);
-
-            ListView layoutList = findViewById(R.id.chat_entries);
-            layoutList.setAdapter(arr);
-            // end of old code
-            //
-        }
-        else {
-
-            Log.d("ChatActivity", "Update() : will notify RecyclerAdapter");
-            this.adapter.notifyDataSetChanged();
-            Log.d("ChatActivity", "Update() : notified RecyclerAdapter");
-        }
-
-        //
+        Log.d("ChatActivity", "Update() : will notify RecyclerAdapter");
+        this.adapter.notifyDataSetChanged();
 
     }
 
@@ -128,5 +117,23 @@ public class ChatActivity extends AppCompatActivity {
         this.chatGroup.addEntry(newEntry);
         // update messages on screen
         updateShowMessages();
+    }
+
+    private void sendMessage(Message msg) {
+        final OkHttpClient client = new OkHttpClient();
+        final JSONObject[] respObject = new JSONObject[1];
+
+        RequestBody reqBody = new FormBody.Builder()
+                .add("room", groupID)
+                .add("user", myUsername)
+                .add("password", myPwd)
+                .add("message", msg.getText())
+
+                .build();
+
+        Request req =   new Request.Builder()
+                .url(AppContext.SERVER_ADDR+"/message/send")
+                .post(reqBody)
+                .build();
     }
 }
