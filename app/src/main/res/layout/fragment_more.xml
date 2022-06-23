@@ -6,26 +6,27 @@
     tools:context=".MoreFragment">
 
 
-    <Button
-        android:id="@+id/btn_createGroup"
+    <androidx.appcompat.widget.AppCompatButton
+
+    android:id="@+id/btn_createGroup"
         android:layout_width="400dp"
         android:layout_height="200dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="40dp"
-        android:background="@color/blue_ist"
+        android:background="@drawable/btn_join_create_group"
         android:text="Create New Group"
-        android:textColor="@color/white"
+        android:textColor="@color/btn_symbols"
         android:textSize="20dp"
         android:textStyle="bold" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_joinGroup"
         android:layout_width="400dp"
         android:layout_height="200dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="290dp"
-        android:textColor="@color/white"
-        android:background="@color/blue_ist"
+        android:textColor="@color/btn_symbols"
+        android:background="@drawable/btn_join_create_group"
         android:text="Join Group"
         android:textSize="20dp"
         android:textStyle="bold"/>
