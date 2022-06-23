@@ -5,15 +5,29 @@
     android:layout_height="match_parent"
     tools:context=".MoreFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/addFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add New Chats"
-        android:layout_marginTop="35dp"
-        android:layout_marginLeft="40dp"
-        android:textColor="@color/black"
-        android:textSize="20dp"/>
+
+    <Button
+        android:id="@+id/btn_createGroup"
+        android:layout_width="400dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="40dp"
+        android:background="@color/blue_ist"
+        android:text="Create New Group"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_joinGroup"
+        android:layout_width="400dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="290dp"
+        android:textColor="@color/white"
+        android:background="@color/blue_ist"
+        android:text="Join Group"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
 
 </FrameLayout>

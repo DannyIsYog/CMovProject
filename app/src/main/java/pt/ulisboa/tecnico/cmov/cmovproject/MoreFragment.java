@@ -15,19 +15,29 @@ import android.widget.Button;
 
 public class MoreFragment extends Fragment implements View.OnClickListener{
 
+    private Button btnNewGroup;
+    private Button btnJoinGroup;
+
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_more,container,false);
+
+       
+
 
         return  rootView;
     }
+
+
 
     @Override
     public void onClick(View view) {
 
 
     }
+
 }
