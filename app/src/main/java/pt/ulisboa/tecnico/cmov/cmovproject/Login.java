@@ -107,6 +107,12 @@ public class Login extends AppCompatActivity {
                             try {
                                 if(respObject.getString("status").equals("success"))
                                 {
+                                    // put username and passwd in shared preferences
+                                    SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                    editor.putString("username", username);
+                                    editor.putString("password", pass);
+                                    editor.apply();
                                     Intent intent = new Intent(Login.this,ChatPage.class);
                                     intent.putExtra("username",username);
                                     intent.putExtra("password",pass);
@@ -130,20 +136,6 @@ public class Login extends AppCompatActivity {
                             }
                         }
                     });
-
-                    // put username and passwd in shared preferences
-                    SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putString("username", username);
-                    editor.putString("password", pass);
-                    editor.apply();
-
-
-                    //Delete code bellow to allow authentication
-                    Intent intent = new Intent(Login.this,ChatPage.class);
-                    intent.putExtra("username",username);
-                    intent.putExtra("password",pass);
-                    startActivity(intent);
                 }
             }
         });
