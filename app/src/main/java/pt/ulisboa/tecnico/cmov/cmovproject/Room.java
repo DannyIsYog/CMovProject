@@ -13,13 +13,19 @@ public class Room {
     private String name;
     private int roomType;
     private List<String> messages;
-    private  List<String> users;
+    private List<String> users;
+    private double latitude;
+    private double longitude;
+    private double radius;
 
-    public Room(String name, int roomType, List<String> messages, List<String> users) {
+    public Room(String name, int roomType, List<String> messages, List<String> users, double latitude, double longitude, double radius) {
         this.name = name;
         this.roomType = roomType;
         this.messages = messages;
         this.users = users;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.radius = radius;
     }
 
     public String getName() {
@@ -34,8 +40,8 @@ public class Room {
         return roomType;
     }
 
-    public void setRoomType(int type) {
-        this.roomType = type;
+    public void setRoomType(int roomType) {
+        this.roomType = roomType;
     }
 
     public List<String> getMessages() {
@@ -54,4 +60,27 @@ public class Room {
         this.users = users;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
 }

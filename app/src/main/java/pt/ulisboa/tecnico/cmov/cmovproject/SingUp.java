@@ -11,8 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -29,6 +31,8 @@ public class SingUp extends AppCompatActivity {
     private EditText edtPassword;
 
     private final OkHttpClient client = new OkHttpClient();
+
+    JSONObject respObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,12 +73,38 @@ public class SingUp extends AppCompatActivity {
                             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                                 String resp = response.body().string();
                                 Log.d("Response", resp);
+                                try {
+                                    respObject = new JSONObject(resp);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    if(respObject.getString("status").equals("success"))
+                                    {
+                                        Intent intent = new Intent(SingUp.this,Login.class);
+                                        intent.putExtra("username",username);
+                                        intent.putExtra("password",pass);
+                                        startActivity(intent);
+                                    }
+                                    else
+                                    {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    Toast.makeText(getApplicationContext(), respObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         });
-                        Intent intent = new Intent(SingUp.this,Login.class);
-                        intent.putExtra("username",username);
-                        intent.putExtra("password",pass);
-                        startActivity(intent);
+
                     }
                 }
             }

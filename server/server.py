@@ -29,7 +29,7 @@ Enums
 class RoomType(Enum):
     PUBLIC = 1,
     PRIVATE = 2,
-    GEO_CASED = 3,
+    GEO = 3,
 
 
 ''''
@@ -42,7 +42,9 @@ class Chatroom(db.Document):
     users = db.ListField(db.ReferenceField('User'))
     messages = db.ListField(db.ReferenceField('Message'))
     roomType = db.IntField()
-    centerLocation = db.PointField()
+    # latitude and longitude of the chatroom
+    latitude = db.FloatField()
+    longitude = db.FloatField()
     radius = db.FloatField()
 
     def to_json(self):
@@ -50,7 +52,10 @@ class Chatroom(db.Document):
             'name': self.name,
             'users': [],
             'messages': [],
-            'roomType': self.roomType
+            'roomType': self.roomType,
+            'latitude': str(self.latitude),
+            'longitude': str(self.longitude),
+            'radius': str(self.radius)
         }
 
 
@@ -67,7 +72,7 @@ class Message(db.Document):
     content = db.StringField()
     user = db.ReferenceField(User)
     chatroom = db.ReferenceField(Chatroom)
-    id = db.IntField()
+    #id = db.IntField()
 
     def to_json(self):
         return {"content": self.content, "user": self.user, "chatroom": self.chatroom}
@@ -136,7 +141,7 @@ def message(ws):
 @sock.route('/connect')
 def connect(socket):
     user = User.objects(username=request.form['user']).first()
-    print(user)
+    print(user, " connected")
     if user is None:
         return jsonify({"status": "error", "message": "user not found"})
     else:
@@ -180,12 +185,28 @@ def roomExists(name):
 def createRoom():
     name = request.form['name']
     roomType = request.form['roomType']
+    # from string to roomType enum
+    roomType = RoomType[roomType.upper()].value[0]
+    print(roomType)
     if roomExists(name):
         return jsonify({"status": "error", "message": "Room already exists"})
-    else:
-        room = Chatroom(name=name, roomType=roomType)
-        room.save()
+    # check if roomType is valid
+    if roomType not in [1, 2, 3]:
+        return jsonify({"status": "error", "message": "Invalid room type"})
+    # check if roomType is of type 3
+    if roomType == RoomType.GEO.value[0]:
+        # get latitude and longitude
+        latitude = request.form['latitude']
+        longitude = request.form['longitude']
+        radius = request.form['radius']
+        # create room
+        room = Chatroom(name=name, roomType=roomType, latitude=latitude,
+                        longitude=longitude, radius=float(radius)).save()
         return jsonify({"status": "success", "message": "Room created"})
+    # create room with longitude and latitude of 0
+    room = Chatroom(name=name, roomType=roomType, latitude=0,
+                    longitude=0, radius=0).save()
+    return jsonify({"status": "success", "message": "Room created"})
 
 # user joins a room
 
@@ -261,6 +282,30 @@ def get_user_rooms():
     rooms = user.chatrooms
     return jsonify([room.to_json() for room in rooms])
 
+
+# get all rooms of a can join
+
+
+@app.route('/room/get/join', methods=['POST'])
+def get_join_rooms():
+    user = request.form['user']
+    # check if user exists
+    user = User.objects(username=user).first()
+    if user is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # get all rooms of user
+    rooms = user.chatrooms
+    # get all roooms
+    allRooms = Chatroom.objects()
+    # get all rooms of type 3
+    joinRooms = [room for room in allRooms if room.roomType == 3]
+    # remove rooms from joinRooms that are already in rooms
+    for room in rooms:
+        joinRooms.remove(room)
+    # join rooms and joinRooms
+    joinRooms.extend(rooms)
+    return jsonify([room.to_json() for room in joinRooms])
+
 # deletes a room
 
 
@@ -282,6 +327,28 @@ def deleteRoom():
     Chatroom.objects(name=name).delete()
     return jsonify({"status": "success", "message": "Room deleted"})
 
+# get id of a room
+
+
+@app.route('/room/get/id', methods=['POST'])
+def get_room_id():
+    name = request.form['name']
+    room = Chatroom.objects(name=name).first()
+    if room is None:
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    return jsonify({"status": "success", "message": str(room.id)})
+
+# get name of room by id
+
+
+@app.route('/room/get/name', methods=['POST'])
+def get_room_name():
+    id = request.form['id']
+    room = Chatroom.objects(id=id).first()
+    if room is None:
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    return jsonify({"status": "success", "message": room.name})
+
 
 '''
 Users
@@ -299,7 +366,7 @@ def create_user():
         return jsonify({"status": "error", "message": "User already exists"})
     User(username=username,
          password=password).save()
-    return "User {} created".format(username)
+    return jsonify({"status": "success", "message": "User created"})
 
 # delete user
 
@@ -344,10 +411,10 @@ def login():
     password = request.form["password"]
     # check if user exists
     if User.objects(username=username).first() is None:
-        return jsonify({"status": "error", "message": "User does not exist"})
+        return jsonify({"status": "error", "message": "User or Password is incorrect"})
     # check if password is correct
     if not checkPassword(username, password):
-        return jsonify({"status": "error", "message": "Password is incorrect"})
+        return jsonify({"status": "error", "message": "User or Password is incorrect"})
     return jsonify({"status": "success", "message": "User logged in"})
 
 
@@ -361,11 +428,22 @@ Messages
 def userHasAccess(user, param):
     return True
 
+# get timestamp of message
+
+
+@app.route('/message/get/timestamp', methods=['POST'])
+def get_message_timestamp():
+    id = request.form['id']
+    message = Message.objects(id=id).first()
+    if message is None:
+        return jsonify({"status": "error", "message": "Message does not exist"})
+    return jsonify({"status": "success", "message": str(message.id.generation_time)})
+
 
 @app.route('/message/send', methods=['POST'])
 def send_message():
-    room = request.form['room']
-    user = request.form['user']
+    room = request.form['chatroom']
+    user = request.form['username']
     message = request.form['message']
     # check if room exists
     if not roomExists(room):
@@ -377,13 +455,83 @@ def send_message():
     if not userHasAccess(user, Chatroom.objects(name=room).first()):
         return jsonify({"status": "error", "message": "User does not have access to room"})
     # check if user is in room
-    if User.objects(username=user).first().chatrooms.filter(name=room).count() == 0:
+    roomObj = Chatroom.objects(name=room).first()
+    userObj = User.objects(username=user).first()
+    if userObj not in roomObj.users:
         return jsonify({"status": "error", "message": "User not in room"})
-    room = Chatroom.objects(name=room).first()
-    user = User.objects(username=user).first()
-    room.messages.append(Message(user=user, message=message))
-    room.save()
+
+    msgObj = Message(user=userObj, content=message)
+    msgObj.save()
+
+    roomObj.update(push__messages=msgObj.to_dbref())
+    roomObj.save()
     return jsonify({"status": "success", "message": "Message sent"})
+
+
+@app.route('/message/get', methods=['POST'])
+def get_message():
+    room = request.form['chatroom']
+    user = request.form['username']
+    msgID = request.form['msgID']
+
+    # check if room exists
+    if not roomExists(room):
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    if User.objects(username=user).first() is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user has access to room
+    if not userHasAccess(user, Chatroom.objects(name=room).first()):
+        return jsonify({"status": "error", "message": "User does not have access to room"})
+    # check if user is in room
+    roomObj = Chatroom.objects(name=room).first()
+    userObj = User.objects(username=user).first()
+    if userObj not in roomObj.users:
+        return jsonify({"status": "error", "message": "User not in room"})
+
+    if (len(roomObj.messages) - 1) < int(msgID):
+        return jsonify({"status": "error", "message": f"Group {room} hasn't message with ID {msgID}"})
+
+    msgObj = roomObj.messages[int(msgID)]
+    return jsonify(
+        {
+            "status": "success",
+            "message": "Message - GET",
+            "username": msgObj.user.username,
+            "message": msgObj.content,
+        })
+
+# return the last existing msgID in a groupChat
+
+
+@app.route('/message/getLastID', methods=['POST'])
+def get_last_message_id():
+    room = request.form['chatroom']
+    user = request.form['username']
+    pwd = request.form['password']
+
+    # check if room exists
+    if not roomExists(room):
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    if User.objects(username=user).first() is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user has access to room
+    if not userHasAccess(user, Chatroom.objects(name=room).first()):
+        return jsonify({"status": "error", "message": "User does not have access to room"})
+    # check if user is in room
+    roomObj = Chatroom.objects(name=room).first()
+    userObj = User.objects(username=user).first()
+    if userObj not in roomObj.users:
+        return jsonify({"status": "error", "message": "User not in room"})
+
+    roomObj = Chatroom.objects(name=room).first()
+
+    return jsonify(
+        {
+            "status": "success",
+            "message": str(len(roomObj.messages) - 1)
+        })
 
 
 '''

@@ -62,7 +62,8 @@ public class ChatPage extends AppCompatActivity {
         setSupportActionBar(topbar);
 
         RequestBody formBody = new FormBody.Builder()
-                .add("user","testUser")
+                .add("user",userName)
+                .add("password", pass)
                 .build();
         Request request =   new Request.Builder()
                 .url("http://10.0.2.2:5000/chat")

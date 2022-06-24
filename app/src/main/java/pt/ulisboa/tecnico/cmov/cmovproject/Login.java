@@ -49,6 +49,14 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // GO TO CHAT TO DEBUG
+        // TODO: CHANGE THIS IF NEEDED (debug chat activity)
+        boolean GO_TO_CHAT = false;
+        if (GO_TO_CHAT) {
+            Intent intent = new Intent(Login.this, ChatActivity.class);
+            startActivity(intent);
+        }
+
         edtName = findViewById(R.id.edt_name);
         edtPassword = findViewById(R.id.edt_password);
         btnLogin = findViewById(R.id.btn_login);
@@ -96,25 +104,38 @@ public class Login extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            /* Uncomment this code to allow authentication
                             try {
                                 if(respObject.getString("status").equals("success"))
                                 {
+                                    // put username and passwd in shared preferences
+                                    SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                    editor.putString("username", username);
+                                    editor.putString("password", pass);
+                                    editor.apply();
                                     Intent intent = new Intent(Login.this,ChatPage.class);
                                     intent.putExtra("username",username);
                                     intent.putExtra("password",pass);
                                     startActivity(intent);
                                 }
+                                else
+                                {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                Toast.makeText(getApplicationContext(), respObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                            }*/
+                            }
                         }
                     });
-                    //Delete code bellow to allow authentication
-                    Intent intent = new Intent(Login.this,ChatPage.class);
-                    intent.putExtra("username",username);
-                    intent.putExtra("password",pass);
-                    startActivity(intent);
                 }
             }
         });
