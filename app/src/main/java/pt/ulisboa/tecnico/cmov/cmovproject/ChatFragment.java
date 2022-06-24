@@ -96,10 +96,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Loca
                 String resp = response.body().string();
                 Log.d("Response", resp);
                 List<Room> rooms = adapter.fromJson(resp);
+
                 Location loc;
                 float distance;
                 for(Room room: rooms)
                 {
+
                     if(room.getRoomType()==3) {
                         loc = new Location("");
                         loc.setLatitude(room.getLatitude());
@@ -170,7 +172,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Loca
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("groupID", filteredRooms.get(position).getName());
 
-
+        Log.d("ChatFrag", "groupID: "+filteredRooms.get(position).getName());
+        Log.d("ChatFrag", "FilteredRooms: "+filteredRooms);
         Intent i = new Intent(ChatFragment.this.getActivity(),ChatActivity.class);
         i.putExtra("groupID",filteredRooms.get(position).getName());
         startActivity(i);

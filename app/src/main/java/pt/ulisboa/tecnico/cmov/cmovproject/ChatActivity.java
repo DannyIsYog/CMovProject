@@ -59,8 +59,8 @@ public class ChatActivity extends AppCompatActivity {
 
         this.chatGroup = new ChatGroup();
        
-        this.groupID = getIntent().getExtras().toString();
-
+        this.groupID = getIntent().getExtras().getString("groupID");
+        Log.d("ChatActivity", "Create() - groupID from Intent: "+groupID);
         //this.groupID = "myGroup";
 
         this.myUsername = sharedPref.getString("username", "MR. NOBODY");
@@ -88,14 +88,10 @@ public class ChatActivity extends AppCompatActivity {
                 this.myUsername,
                 this.myPwd);
         layoutList.setLayoutManager(new LinearLayoutManager(this));
-        Log.d("ChatActivity", "LayoutList was set on recyclerView!");
-        Log.d("ChatActivity", "Will set adapter to recyclerView!");
         layoutList.setAdapter(adapter);
-        Log.d("ChatActivity", "Adapter was set on recyclerView!");
 
         // Insert new message on chat
         et = findViewById(R.id.new_chat_entry);
-        Log.d("ChatActivity", "EditText of new chat entry OK");
         et.setOnKeyListener(new EditText.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -116,13 +112,13 @@ public class ChatActivity extends AppCompatActivity {
 
         // ** GPS STUFF **
         // check if room is geoFenced
-        Integer roomType = savedInstanceState.getInt("roomType", 1);
+        Integer roomType = getIntent().getExtras().getInt("roomType", 1);
         Log.d("ChatActivity", "roomType: "+roomType);
 
         if(roomType==3) {
-            Double roomLatitude = savedInstanceState.getDouble("roomLatitude");
-            Double roomLongitude = savedInstanceState.getDouble("roomLongitude");
-            Double roomRadius = savedInstanceState.getDouble("roomRadius");
+            Double roomLatitude = getIntent().getExtras().getDouble("roomLatitude");
+            Double roomLongitude = getIntent().getExtras().getDouble("roomLongitude");
+            Double roomRadius = getIntent().getExtras().getDouble("roomRadius");
             if (roomLongitude == 0 || roomLatitude == 0 || roomRadius == 0 ) {
                 Log.e("ChatActivity", "Initialize GPS listener: one of the parms was zero:");
                 Log.e("ChatActivity", "roomLatitude = "+roomLatitude);
