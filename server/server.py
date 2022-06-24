@@ -282,6 +282,28 @@ def deleteRoom():
     Chatroom.objects(name=name).delete()
     return jsonify({"status": "success", "message": "Room deleted"})
 
+# get id of a room
+
+
+@app.route('/room/get/id', methods=['POST'])
+def get_room_id():
+    name = request.form['name']
+    room = Chatroom.objects(name=name).first()
+    if room is None:
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    return jsonify({"status": "success", "message": str(room.id)})
+
+# get name of room by id
+
+
+@app.route('/room/get/name', methods=['POST'])
+def get_room_name():
+    id = request.form['id']
+    room = Chatroom.objects(id=id).first()
+    if room is None:
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    return jsonify({"status": "success", "message": room.name})
+
 
 '''
 Users
@@ -361,6 +383,17 @@ Messages
 def userHasAccess(user, param):
     return True
 
+# get timestamp of message
+
+
+@app.route('/message/get/timestamp', methods=['POST'])
+def get_message_timestamp():
+    id = request.form['id']
+    message = Message.objects(id=id).first()
+    if message is None:
+        return jsonify({"status": "error", "message": "Message does not exist"})
+    return jsonify({"status": "success", "message": str(message.id.generation_time)})
+
 
 @app.route('/message/send', methods=['POST'])
 def send_message():
@@ -390,13 +423,12 @@ def send_message():
     return jsonify({"status": "success", "message": "Message sent"})
 
 
-
 @app.route('/message/get', methods=['POST'])
 def get_message():
     room = request.form['chatroom']
     user = request.form['username']
     msgID = request.form['msgID']
-    
+
     # check if room exists
     if not roomExists(room):
         return jsonify({"status": "error", "message": "Room does not exist"})
@@ -413,24 +445,26 @@ def get_message():
         return jsonify({"status": "error", "message": "User not in room"})
 
     if (len(roomObj.messages) - 1) < int(msgID):
-        return jsonify({"status": "error", "message": f"Group {room} hasn't message with ID {msgID}" })
+        return jsonify({"status": "error", "message": f"Group {room} hasn't message with ID {msgID}"})
 
     msgObj = roomObj.messages[int(msgID)]
     return jsonify(
         {
-        "status": "success", 
-        "message": "Message - GET",
-        "username": msgObj.user.username,
-        "message": msgObj.content, 
+            "status": "success",
+            "message": "Message - GET",
+            "username": msgObj.user.username,
+            "message": msgObj.content,
         })
 
 # return the last existing msgID in a groupChat
+
+
 @app.route('/message/getLastID', methods=['POST'])
 def get_last_message_id():
     room = request.form['chatroom']
     user = request.form['username']
     pwd = request.form['password']
-    
+
     # check if room exists
     if not roomExists(room):
         return jsonify({"status": "error", "message": "Room does not exist"})
@@ -447,14 +481,15 @@ def get_last_message_id():
         return jsonify({"status": "error", "message": "User not in room"})
 
     roomObj = Chatroom.objects(name=room).first()
-    
+
     print(roomObj)
 
     return jsonify(
         {
-        "status": "success", 
-        "message": len(roomObj.messages)
+            "status": "success",
+            "message": len(roomObj.messages)
         })
+
 
 '''
 Mainpage / Debug
