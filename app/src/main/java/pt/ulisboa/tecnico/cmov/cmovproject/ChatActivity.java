@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
@@ -57,15 +58,14 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         this.chatGroup = new ChatGroup();
-       if (savedInstanceState == null){
-           Log.d("ChatActivity","ITS NUUUUUL");
-           this.groupID = sharedPref.getString("groupID", "myGroup");
+        Intent intent = getIntent();
+        this.groupID = intent.getStringExtra("groupId");
+       if (groupID == null){
+           Log.d("ChatActivity","GroupID was null on intent");
+           this.groupID = sharedPref.getString("groupID", "NoGroupDefined");
 
        }
-       else{
-           this.groupID = savedInstanceState.getString("groupID");
-       }
-
+        Log.d("ChatActivity", "GroupID : "+this.groupID);
         //this.groupID = "myGroup";
 
         this.myUsername = sharedPref.getString("username", "MR. NOBODY");
@@ -76,6 +76,10 @@ public class ChatActivity extends AppCompatActivity {
                 "ERROR: USERNAME OR PASSWORD COULDN'T BE RETRIEVED FROM SHARED PREFERENCES");
         }
 
+        Log.d("ChatActivity", "Create():");
+        Log.d("ChatActivity", "Create() - username: "+myUsername);
+        Log.d("ChatActivity", "Create() - password: "+myPwd);
+        Log.d("ChatActivity", "Create() - groupID: "+groupID);
 
 
         // new code for weird recycle list
@@ -118,7 +122,7 @@ public class ChatActivity extends AppCompatActivity {
         // ** GPS STUFF **
         // check if room is geoFenced
         Integer roomType = savedInstanceState.getInt("roomType", 1);
-        Log.d("ChatActivity", "roomType: "+groupType);
+        Log.d("ChatActivity", "roomType: "+roomType);
 
         if(roomType==3) {
             Double roomLatitude = savedInstanceState.getDouble("roomLatitude");
@@ -230,7 +234,7 @@ public class ChatActivity extends AppCompatActivity {
         updateShowMessages();
     }
 
-    public void setOutOfRoom(Boolean newVal) {
+    public void setIsOutOfRoom(Boolean newVal) {
         synchronized (this.isOutOfRoom) {
             this.isOutOfRoom = newVal;
         }

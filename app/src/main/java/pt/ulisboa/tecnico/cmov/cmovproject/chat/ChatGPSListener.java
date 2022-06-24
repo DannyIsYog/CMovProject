@@ -58,7 +58,7 @@ public class ChatGPSListener implements LocationListener {
         while(currentLoc == null) {}
         Float distance = loc.distanceTo(currentLoc);
         if (distance > roomRadius) {
-            this.chatActivity.setOutofRoom(true);
+            this.chatActivity.setIsOutOfRoom(true);
         }
     }
 
