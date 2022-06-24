@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ListGroupsFragment extends Fragment implements View.OnClickListener {
+public class ListGroupsFragment extends Fragment implements View.OnClickListener, GroupListAdapter.OnNoteListener {
 
     private RecyclerView recyclerView;
 
@@ -22,10 +22,12 @@ public class ListGroupsFragment extends Fragment implements View.OnClickListener
 
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
 
+
+
         recyclerView = rootView.findViewById(R.id.recycler);
         recyclerView .setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-        recyclerView.setAdapter(new JoinGroupAdapter());
+        recyclerView.setAdapter(new JoinGroupAdapter(ListGroupsFragment.this));
         return rootView;
 
     }
@@ -33,6 +35,11 @@ public class ListGroupsFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
+
+    }
+
+    @Override
+    public void onNoteClick(int position) {
 
     }
 }

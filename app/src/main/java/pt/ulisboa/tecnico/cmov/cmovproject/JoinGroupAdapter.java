@@ -12,8 +12,12 @@ import java.util.List;
 public class JoinGroupAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     private List<Room> _groupChats;
+    private GroupListAdapter.OnNoteListener mOnNoteListener;
 
-    public JoinGroupAdapter() {
+
+    public JoinGroupAdapter(GroupListAdapter.OnNoteListener onNoteListener) {
+        this.mOnNoteListener= onNoteListener;
+
     }
 
     @Override
@@ -26,7 +30,7 @@ public class JoinGroupAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(viewType,parent,false);
-        return new RecyclerViewHolder(view);
+        return new RecyclerViewHolder(view,mOnNoteListener);
     }
 
     @Override
@@ -41,5 +45,9 @@ public class JoinGroupAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
     @Override
     public int getItemCount() {
         return _groupChats.size();
+    }
+
+    public interface OnNoteListener{
+        void onNoteClick(int position);
     }
 }
