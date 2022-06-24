@@ -10,11 +10,13 @@ import pt.ulisboa.tecnico.cmov.cmovproject.chat.message.TextMessage;
 public class ChatEntry implements Serializable {
     private String username;
     private Message msg;
+    private String ts;
 
     // TODO: create builder for other types of message
-    public ChatEntry(String username, String textMsg){
+    public ChatEntry(String username, String textMsg, String ts){
         this.username = username;
         this.msg = new TextMessage(textMsg);
+        this.ts = ts;
     }
 
     public String getUsername() {
@@ -23,6 +25,10 @@ public class ChatEntry implements Serializable {
 
     public Message getMsg() {
         return msg;
+    }
+
+    public String getTs() {
+        return this.ts;
     }
 
     public int getByteCount(){
@@ -36,6 +42,6 @@ public class ChatEntry implements Serializable {
     }
 
     public static ChatEntry getEmptyEntry() {
-        return new ChatEntry("empty", "empty");
+        return new ChatEntry("downloading...", "downloading...", "");
     }
 }
