@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.CancellationSignal;
 import android.os.Message;
@@ -77,7 +78,9 @@ public class MoreFragment extends Fragment implements View.OnClickListener, Loca
 
         btnJoinGroup.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                joinGroup();
+                Fragment fragment = new ListGroupsFragment();
+                FragmentManager fm = getChildFragmentManager();
+                fm.beginTransaction().replace(R.id.frag_more, fragment).commit();
 
             }
         });
@@ -220,13 +223,6 @@ public class MoreFragment extends Fragment implements View.OnClickListener, Loca
         alert.show();
 
     }
-
-    public void joinGroup(){
-        //mostrar os grupos para escolher
-
-    }
-
-
 
     @Override
     public void onClick(View view) {
