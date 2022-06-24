@@ -21,6 +21,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -39,6 +42,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener{
 
     private final OkHttpClient client = new OkHttpClient();
 
+    JSONObject respObject;
 
 
     @Nullable
@@ -133,7 +137,34 @@ public class MoreFragment extends Fragment implements View.OnClickListener{
 
                         @Override
                         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
+                            String resp = response.body().string();
+                            Log.d("Response", resp);
+                            try {
+                                respObject = new JSONObject(resp);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                if(respObject.getString("status").equals("success"))
+                                {
+                                    //go to show chats activity or join the chat that was just created maybe
+                                }
+                                else
+                                {
+                                    chatPage.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                Toast.makeText(chatPage.getApplicationContext(), respObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
 
@@ -145,7 +176,8 @@ public class MoreFragment extends Fragment implements View.OnClickListener{
 
                         @Override
                         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
+                            String resp = response.body().string();
+                            Log.d("Response", resp);
                         }
                     });
                 }

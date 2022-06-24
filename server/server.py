@@ -29,7 +29,7 @@ Enums
 class RoomType(Enum):
     PUBLIC = 1,
     PRIVATE = 2,
-    GEO_CASED = 3,
+    GEO = 3,
 
 
 ''''
@@ -42,7 +42,9 @@ class Chatroom(db.Document):
     users = db.ListField(db.ReferenceField('User'))
     messages = db.ListField(db.ReferenceField('Message'))
     roomType = db.IntField()
-    centerLocation = db.PointField()
+    # latitude and longitude of the chatroom
+    latitude = db.FloatField()
+    longitude = db.FloatField()
     radius = db.FloatField()
 
     def to_json(self):
@@ -180,12 +182,27 @@ def roomExists(name):
 def createRoom():
     name = request.form['name']
     roomType = request.form['roomType']
+    # from string to roomType enum
+    roomType = RoomType[roomType.upper()]
     if roomExists(name):
         return jsonify({"status": "error", "message": "Room already exists"})
-    else:
-        room = Chatroom(name=name, roomType=roomType)
-        room.save()
+    # check if roomType is valid
+    if roomType not in [1, 2, 3]:
+        return jsonify({"status": "error", "message": "Invalid room type"})
+    # check if roomType is of type 3
+    if roomType == RoomType.GEO_CASED.value:
+        # get latitude and longitude
+        latitude = request.form['latitude']
+        longitude = request.form['longitude']
+        radius = request.form['radius']
+        # create room
+        room = Chatroom(name=name, roomType=roomType, latitude=latitude,
+                        longitude=longitude, radius=radius).save()
         return jsonify({"status": "success", "message": "Room created"})
+    # create room with longitude and latitude of 0
+    room = Chatroom(name=name, roomType=roomType, latitude=0,
+                    longitude=0, radius=0).save()
+    return jsonify({"status": "success", "message": "Room created"})
 
 # user joins a room
 
@@ -260,6 +277,29 @@ def get_user_rooms():
     # get all rooms of user
     rooms = user.chatrooms
     return jsonify([room.to_json() for room in rooms])
+
+# get all rooms of a user
+
+
+@app.route('/room/get/join', methods=['POST'])
+def get_join_rooms():
+    user = request.form['user']
+    # check if user exists
+    user = User.objects(username=user).first()
+    if user is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # get all rooms of user
+    rooms = user.chatrooms
+    # get all roooms
+    allRooms = Chatroom.objects()
+    # get all rooms of type 3
+    joinRooms = [room for room in allRooms if room.roomType == 3]
+    # remove rooms from joinRooms that are already in rooms
+    for room in rooms:
+        joinRooms.remove(room)
+    # join rooms and joinRooms
+    joinRooms.extend(rooms)
+    return jsonify([room.to_json() for room in joinRooms])
 
 # deletes a room
 
@@ -481,12 +521,11 @@ def get_last_message_id():
         return jsonify({"status": "error", "message": "User not in room"})
 
     roomObj = Chatroom.objects(name=room).first()
-    
 
     return jsonify(
         {
-        "status": "success", 
-        "message": str( len(roomObj.messages) - 1 )
+            "status": "success",
+            "message": str(len(roomObj.messages) - 1)
         })
 
 
