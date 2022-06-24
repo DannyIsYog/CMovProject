@@ -78,6 +78,7 @@ public class NoLogin extends AppCompatActivity {
                                     {
                                         Intent intent = new Intent(NoLogin.this,ChatPage.class);
                                         intent.putExtra("username",username);
+                                        intent.putExtra("password","");
                                         startActivity(intent);
                                     }
                                     else
