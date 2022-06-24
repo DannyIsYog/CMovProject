@@ -32,13 +32,14 @@ import java.util.concurrent.CountDownLatch;
 public class AppContext extends Application {
     public static final String SERVER_ADDR = "http://10.0.2.2:5000";
     public static final String SHARED_PREFERENCES = "shared_preferences_cmu";
+    private static final long RETRY_TIME_MILLIS = 5000;
     private LruCache<ChatEntryID, ChatEntry> chatEntryLruCache;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d("AppContext", "create()");
-        int CACHE_SIZE = 4 * 1024 * 1024; // 4MiB
+        int CACHE_SIZE = 40 * 1024 * 1024; // 40MiB
 
         this.chatEntryLruCache = new LruCache<ChatEntryID, ChatEntry>(CACHE_SIZE) {
             protected int sizeOf(ChatEntryID key, ChatEntry value) {
@@ -66,7 +67,7 @@ public class AppContext extends Application {
         }
 
         if (!isCached) {
-
+            Log.d("AppContext", "cache: msg ID "+key.getMsgID()+" is NOT cached");
             // value not in cache, download it
             try {
                 res = downloadChatEntry(key);
@@ -78,6 +79,9 @@ public class AppContext extends Application {
                 return ChatEntry.getEmptyEntry();
             }
         }
+        else {
+            Log.d("AppContext", "cache: msg ID "+key.getMsgID()+" is cached");
+        }
 
         return res;
     }
@@ -85,6 +89,7 @@ public class AppContext extends Application {
 
     private ChatEntry downloadChatEntry(@NonNull ChatEntryID key)
         throws IOException, NoSuchFileException {
+        Log.d("AppContext", "Download: Cache has "+chatEntryLruCache.size()+" bytes");
         final Object hasCompletedLock = new Object();
 
         SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
@@ -96,7 +101,7 @@ public class AppContext extends Application {
 
 
         RequestBody reqBody = new FormBody.Builder()
-                .add("username", username) // TODO: CHANGE USER AND PASS
+                .add("username", username)
                 .add("password", passwd)
                 .add("chatroom", key.getGroupID())
                 .add("msgID", key.getMsgID())
@@ -108,53 +113,83 @@ public class AppContext extends Application {
                 .post(reqBody)
                 .build();
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        client.newCall(req).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+        final Boolean[] downloadOK = {false};
+        while(!downloadOK[0]) {
+            CountDownLatch countDownLatch = new CountDownLatch(1);
+            client.newCall(req).enqueue(new Callback() {
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
-                String resp;
-                try {
-                    resp = response.body().string();
-                } catch (IOException ioe) {
-                    Log.e("AppContext", "error on getting msg with ID "+key.getMsgID());
-                    Log.e("AppContext", "download entry: response json is bad");
-                    Log.e("AppContext", "json received: "+response.body());
-                    countDownLatch.countDown();
-                    return;
+                    String resp;
+                    try {
+                        resp = response.body().string();
+                    } catch (IOException ioe) {
+                        Log.e("AppContext", "error on getting msg with ID " + key.getMsgID());
+                        Log.e("AppContext", "(MSG ID: "+key.getMsgID()+") download entry: response json is bad");
+                        Log.e("AppContext", "json received: " + response.body());
+                        countDownLatch.countDown();
+                        return;
+                    }
+                    try {
+                        respObject[0] = new JSONObject(resp);
+                        Log.d("AppContext - Response", respObject[0].getString("status"));
+                        downloadOK[0] = true;
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("AppContext", "will return IOException because json received was bad");
+                        Log.d("AppContext", "json that triggered the exception: " + respObject[0]);
+                        Log.d("AppContext", "exception msg: " + e.getLocalizedMessage());
+                        //throw new IOException(e.getLocalizedMessage());
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+
                 }
-                try {
-                    respObject[0] = new JSONObject(resp);
-                    Log.d("AppContext - Response", respObject[0].getString("status"));
 
-                } catch (JSONException e) {
+
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     e.printStackTrace();
-                    Log.d("AppContext", "will return IOException because json received was bad");
-                    Log.d("AppContext", "json that triggered the exception: "+respObject[0]);
-                    Log.d("AppContext", "exception msg: "+e.getLocalizedMessage());
-                    //throw new IOException(e.getLocalizedMessage());
-                } finally {
+                    Log.d("AppContext", "Failed downloading! Msg: " + e.getMessage());
                     countDownLatch.countDown();
                 }
+            });
 
+            // wait for server response
+            try {
+                Log.d("AppContext", "(MSG ID: "+key.getMsgID()+") Waiting for response...");
+                countDownLatch.await();
+                Log.d("AppContext", "(MSG ID: "+key.getMsgID()+") Response came!");
+
+                // if download failed try again in 5 sec
+                if (!downloadOK[0]) {
+                    Log.d("AppContext", "(MSG ID: "+key.getMsgID()+") Download failed, will try again in 5 secs");
+                    Thread.sleep(RETRY_TIME_MILLIS);
+
+                    // see if in the meanwhile another thread cached it
+                    ChatEntry res;
+                    boolean isCached;
+
+                    // lock for read
+                    synchronized (chatEntryLruCache) {
+                        res = chatEntryLruCache.get(key);
+                        isCached = !(chatEntryLruCache.get(key) == null);
+                    }
+                    if (isCached) {
+                        return res;
+                    }
+                }
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+                Log.d("AppContext", "Thread interrupted: "+ie.getLocalizedMessage());
             }
 
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                Log.d("AppContext", "Failed downloading! Msg: "+e.getMessage());
-                countDownLatch.countDown();
-            }
-        });
 
-        // wait for server response
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
-            Log.d("AppContext", "Thread interrupted: "+ie.getLocalizedMessage());
-        }
+        } // end of while
+
+
         try {
             String usernameFromMsg = respObject[0].getString("username");
             String message = respObject[0].getString("message");

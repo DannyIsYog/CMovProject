@@ -37,6 +37,7 @@ import pt.ulisboa.tecnico.cmov.cmovproject.chat.message.TextMessage;
 import pt.ulisboa.tecnico.cmov.cmovproject.chat.recycler.RecyclerViewChatAdapter;
 
 public class ChatActivity extends AppCompatActivity {
+    private static final long ITEM_COUNT_TIME_MILLIS = 5000;
     private ChatGroup chatGroup;
     private String myUsername;
     private String myPwd;
@@ -87,6 +88,7 @@ public class ChatActivity extends AppCompatActivity {
                 this.groupID,
                 this.myUsername,
                 this.myPwd);
+        adapter.updateItemCount();
         layoutList.setLayoutManager(new LinearLayoutManager(this));
         layoutList.setAdapter(adapter);
 
@@ -129,14 +131,28 @@ public class ChatActivity extends AppCompatActivity {
 
         }
 
-        // TODO: create a thread to update the item count each x seconds
+        // thread that updates size of msgs
         Runnable threadItemCount = new Runnable() {
             public void run() {
-                try {
-                    Thread.sleep(5000);
-                    adapter.updateItemCount();
-                } catch (InterruptedException ie) {
-                    return;
+                while(true) {
+                    try {
+
+                        Thread.sleep(ChatActivity.ITEM_COUNT_TIME_MILLIS);
+                        Log.d("ChatAcivity", "Thread: will update last id");
+                        adapter.updateItemCount();
+                        runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+
+                                adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+
+                            }
+                        });
+
+                    } catch (InterruptedException ie) {
+                        return;
+                    }
                 }
             }
         };
@@ -150,7 +166,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // show existing messages
         // erase this since it's very heavy
-        updateShowMessages();
+        //updateShowMessages();
 
 
     }
@@ -172,11 +188,6 @@ public class ChatActivity extends AppCompatActivity {
         return new ChatEntry(this.myUsername, textMsg, "never");
     }
 
-    private void addEntry(ChatEntry newEntry){
-        this.chatGroup.addEntry(newEntry);
-        // update messages on screen
-        updateShowMessages();
-    }
 
     private void sendMessage(Message msg) {
         final OkHttpClient client = new OkHttpClient();
@@ -222,7 +233,7 @@ public class ChatActivity extends AppCompatActivity {
                 Log.d("AppContext", e.getMessage());
             }
         });
-        updateShowMessages();
+        adapter.updateItemCount();
     }
 
     public void setIsOutOfRoom(Boolean newVal) {

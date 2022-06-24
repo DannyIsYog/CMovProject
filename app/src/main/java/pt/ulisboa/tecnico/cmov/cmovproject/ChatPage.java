@@ -61,6 +61,7 @@ public class ChatPage extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(bottomNavMethod);
         setSupportActionBar(topbar);
 
+        /* OLD TEST CODE FOR WEBSOCKETS
         RequestBody formBody = new FormBody.Builder()
                 .add("user",userName)
                 .add("password", pass)
@@ -71,7 +72,7 @@ public class ChatPage extends AppCompatActivity {
         EchoWebSocketListener listener = new EchoWebSocketListener();
 
         WebSocket ws = client.newWebSocket(request,listener);
-        client.dispatcher().executorService().shutdown();
+        client.dispatcher().executorService().shutdown(); */
     }
 
     private BottomNavigationView.OnItemSelectedListener bottomNavMethod=new BottomNavigationView.OnItemSelectedListener(){

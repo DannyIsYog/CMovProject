@@ -52,7 +52,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
         this.appContext = appContext;
         this.groupID = groupID;
         this.myContext = context;
-        this.lastKnownIdx = 0;
+        this.lastKnownIdx = -1;
         this.myUsername = user;
         this.myPasswd = pwd;
     }
@@ -72,8 +72,6 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
 
         ChatEntry chatEntry = this.appContext.getChatEntry(new ChatEntryID(groupID, i));
 
-        Log.d("RecyclerAdapt: bind", "myString = "+customViewHolder.toString());
-
         //Setting text views on viewHolder
         customViewHolder.msgTextView.setText(chatEntry.getMsg().getText());
         customViewHolder.usernameView.setText(chatEntry.getUsername());
@@ -92,7 +90,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
 
     @Override
     public int getItemCount() {
-        Log.d("RecyclerViewChat", "Entered getItemCount(), will probably return "+this.lastKnownIdx);
+        Log.d("RecyclerViewChat", "Entered getItemCount(), will return "+(this.lastKnownIdx+1));
         return this.lastKnownIdx+1;
     }
 
