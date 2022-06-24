@@ -236,4 +236,9 @@ public class ChatActivity extends AppCompatActivity {
             return this.isOutOfRoom;
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }
