@@ -15,6 +15,7 @@ import android.util.LruCache;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -44,6 +45,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText et;
     private RecyclerViewChatAdapter adapter;
     private AppContext appContext;
+    private Button leave;
 
     private Boolean isOutOfRoom = false;
 
@@ -53,6 +55,16 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         Log.d("ChatActivity","ENTERED CHAT_ACTIVITY" );
+
+        leave = findViewById(R.id.btn_leave_chat);
+
+        leave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
 
         this.appContext = (AppContext) getApplicationContext();
         SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
