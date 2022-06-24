@@ -32,4 +32,6 @@
         android:textSize="20dp"
         android:textStyle="bold"/>
 
+    android:visibility=""
+
 </FrameLayout>

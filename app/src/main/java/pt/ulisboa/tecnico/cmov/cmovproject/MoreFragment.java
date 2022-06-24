@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.CancellationSignal;
 import android.os.Message;
@@ -36,6 +37,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -78,9 +80,12 @@ public class MoreFragment extends Fragment implements View.OnClickListener, Loca
 
         btnJoinGroup.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Fragment fragment = new ListGroupsFragment();
-                FragmentManager fm = getChildFragmentManager();
-                fm.beginTransaction().replace(R.id.frag_more, fragment).commit();
+
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                fm.beginTransaction().replace(R.id.frag_more, new JoinGroupFragment()).commit();
+                //Fragment fragment = new ListGroupsFragment();
+                //FragmentManager fm = getChildFragmentManager();
+                //fm.beginTransaction().replace(R.id.frag_more, fragment).commit();
 
             }
         });
