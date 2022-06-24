@@ -26,7 +26,7 @@ public class JoinGroupFragment extends Fragment {
 
     double latitude;
     double longitude;
-    
+
 
     @Nullable
     @Override
