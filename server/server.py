@@ -293,18 +293,17 @@ def get_join_rooms():
     user = User.objects(username=user).first()
     if user is None:
         return jsonify({"status": "error", "message": "User does not exist"})
+    # get all rooms
+    rooms = Chatroom.objects()
     # get all rooms of user
-    rooms = user.chatrooms
-    # get all roooms
-    allRooms = Chatroom.objects()
-    # get all rooms of type 3
-    joinRooms = [room for room in allRooms if room.roomType == 3]
-    # remove rooms from joinRooms that are already in rooms
-    for room in rooms:
-        joinRooms.remove(room)
-    # join rooms and joinRooms
-    joinRooms.extend(rooms)
-    return jsonify([room.to_json() for room in joinRooms])
+    user_rooms = user.chatrooms
+    # get all rooms that user can join
+    join_rooms = [room for room in rooms if room not in user_rooms]
+    # remove rooms of type 2
+    join_rooms = [room for room in join_rooms if room.roomType !=
+                  RoomType.PRIVATE.value[0]]
+    # return all rooms that user can join
+    return jsonify([room.to_json() for room in join_rooms])
 
 # deletes a room
 

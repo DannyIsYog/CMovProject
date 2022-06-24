@@ -13,7 +13,8 @@ public class JoinGroupAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     private List<Room> _groupChats;
 
-    public JoinGroupAdapter() {
+    public JoinGroupAdapter(List<Room> rooms) {
+        this._groupChats = rooms;
     }
 
     @Override
