@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
-from socket import socket
-from unicodedata import name
 from flask import Flask, request, jsonify
 from flask_mongoengine import MongoEngine
 from enum import Enum
