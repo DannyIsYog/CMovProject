@@ -115,14 +115,22 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
 
         client.newCall(req).enqueue(new Callback() {
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                String resp = response.body().string();
+            public void onResponse(@NonNull Call call, @NonNull Response response)  {
+                String resp;
+                try {
+                    resp = response.body().string();
+                } catch (IOException ioe) {
+                    Log.d("RecyclerChat", "getItemCount() - response from server had problem");
+                    Log.d("RecyclerChat", "getItemCount() - exception msg: "+ioe.getLocalizedMessage());
+                    return;
+                }
                 try {
                     respObject[0] = new JSONObject(resp);
                     Log.d("RecyclerView - Response", "ItemCount() status: "+respObject[0].getString("status"));
                     if (!respObject[0].getString("status").equals("success")) {
-                        Log.d("RecyclerViewChat", "response was not success, instead it was: "+respObject[0].toString());
-                        throw new IOException("ERROR GETTING LAST MSG ID");
+                        Log.d("RecyclerViewChat", "Error getting last msg ID: response was not success, instead it was: "+respObject[0].toString());
+                        //throw new IOException("ERROR GETTING LAST MSG ID");
+                        return;
                     }
 
                     Log.d("RecyclerViewChat", "getItemCount(), received pkt with ID = "
@@ -131,8 +139,9 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
                     myAdapter.setLastKnownIdx( Integer.parseInt(respObject[0].getString("message")) );
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
-                    throw new IOException(e);
+                    Log.d("RecyclerViewChat",
+                    "ERROR: Response had json problem, exception msg: "+e.getLocalizedMessage());
+                    return;
                 }
             }
 
@@ -144,7 +153,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
         });
         synchronized (this.lockLastIdx) {
             Log.d("RecyclerChat", "ending getItemCount(), will return "+this.lastKnownIdx);
-            return this.lastKnownIdx;
+            return this.lastKnownIdx + 1;
         }
     }
 

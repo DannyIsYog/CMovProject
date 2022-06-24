@@ -99,8 +99,6 @@ public class ChatActivity extends AppCompatActivity {
                     // enter detected, lets add string to list
                     //addEntry(getNewEntry()); OLD CODE
                     sendMessage(getNewEntry().getMsg());
-
-                    Log.d("ChatActivity : OnKey","list = "+chatGroup.getEntries().toString());
                 }
                 return false;
             }

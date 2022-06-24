@@ -56,21 +56,29 @@ public class AppContext extends Application {
 
     // gets entry from cache, if not in cache then downloads it
     public ChatEntry getChatEntry(ChatEntryID key) {
-        ChatEntry res = chatEntryLruCache.get(key);
+        ChatEntry res;
+        boolean isCached;
 
+        // lock for read
         synchronized (chatEntryLruCache) {
-            if (chatEntryLruCache.get(key) == null) {
+            res = chatEntryLruCache.get(key);
+            isCached = !(chatEntryLruCache.get(key) == null);
+        }
 
-                // value not in cache, download it
-                try {
-                    res = downloadChatEntry(key);
+        if (!isCached) {
+
+            // value not in cache, download it
+            try {
+                res = downloadChatEntry(key);
+                synchronized (chatEntryLruCache) {
                     chatEntryLruCache.put(key, res);
-                } catch (IOException de) {
-                    // had problem downloading chat, show empty for now
-                    return ChatEntry.getEmptyEntry();
                 }
+            } catch (IOException de) {
+                // had problem downloading chat, show empty for now
+                return ChatEntry.getEmptyEntry();
             }
         }
+
         return res;
     }
 
@@ -106,8 +114,16 @@ public class AppContext extends Application {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
-
-                String resp = response.body().string();
+                String resp;
+                try {
+                    resp = response.body().string();
+                } catch (IOException ioe) {
+                    Log.e("AppContext", "error on getting msg with ID "+key.getMsgID());
+                    Log.e("AppContext", "download entry: response json is bad");
+                    Log.e("AppContext", "json received: "+response.body());
+                    countDownLatch.countDown();
+                    return;
+                }
                 try {
                     respObject[0] = new JSONObject(resp);
                     Log.d("AppContext - Response", respObject[0].getString("status"));
@@ -115,7 +131,9 @@ public class AppContext extends Application {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("AppContext", "will return IOException because json received was bad");
-                    throw new IOException(e);
+                    Log.d("AppContext", "json that triggered the exception: "+respObject[0]);
+                    Log.d("AppContext", "exception msg: "+e.getLocalizedMessage());
+                    //throw new IOException(e.getLocalizedMessage());
                 } finally {
                     countDownLatch.countDown();
                 }

@@ -136,7 +136,7 @@ def message(ws):
 @sock.route('/connect')
 def connect(socket):
     user = User.objects(username=request.form['user']).first()
-    print(user)
+    print(user, " connected")
     if user is None:
         return jsonify({"status": "error", "message": "user not found"})
     else:
@@ -448,12 +448,11 @@ def get_last_message_id():
 
     roomObj = Chatroom.objects(name=room).first()
     
-    print(roomObj)
 
     return jsonify(
         {
         "status": "success", 
-        "message": len(roomObj.messages)
+        "message": str( len(roomObj.messages) - 1 )
         })
 
 '''
