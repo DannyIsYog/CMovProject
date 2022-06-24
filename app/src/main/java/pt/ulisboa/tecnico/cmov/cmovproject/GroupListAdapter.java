@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.cmovproject;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +13,11 @@ import java.util.List;
 public class GroupListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     private List<Room> _groupChats;
+    private OnNoteListener mOnNoteListener;
 
-    public GroupListAdapter(List<Room> rooms) {
+    public GroupListAdapter(List<Room> rooms, OnNoteListener onNoteListener) {
         this._groupChats = rooms;
+        this.mOnNoteListener= onNoteListener;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class GroupListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(viewType,parent,false);
-        return new RecyclerViewHolder(view);
+        return new RecyclerViewHolder(view,mOnNoteListener);
     }
 
     @Override
@@ -43,4 +46,10 @@ public class GroupListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
     public int getItemCount() {
         return _groupChats.size();
     }
+
+    public interface OnNoteListener{
+        void onNoteClick(int position);
+    }
+
+
 }

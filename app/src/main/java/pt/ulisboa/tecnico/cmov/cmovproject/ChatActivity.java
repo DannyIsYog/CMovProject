@@ -57,8 +57,16 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         this.chatGroup = new ChatGroup();
-        //this.groupID = savedInstanceState.getString("groupID"); // TODO: change to this
-        this.groupID = "myGroup";
+       if (savedInstanceState == null){
+           Log.d("ChatActivity","ITS NUUUUUL");
+           this.groupID = sharedPref.getString("groupID", "myGroup");
+
+       }
+       else{
+           this.groupID = savedInstanceState.getString("groupID");
+       }
+
+        //this.groupID = "myGroup";
 
         this.myUsername = sharedPref.getString("username", "MR. NOBODY");
         this.myPwd = sharedPref.getString("password", "I HAVE NO PASSOWRD");

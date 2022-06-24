@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
-from socket import socket
-from unicodedata import name
 from flask import Flask, request, jsonify
 from flask_mongoengine import MongoEngine
 from enum import Enum
@@ -355,6 +353,30 @@ def get_room_name():
     if room is None:
         return jsonify({"status": "error", "message": "Room does not exist"})
     return jsonify({"status": "success", "message": room.name})
+
+# user joins a room by id
+
+
+@app.route('/room/join/id', methods=['POST'])
+def join_room_id():
+    id = request.form['id']
+    user = request.form['user']
+    # check if room exists
+    room = Chatroom.objects(id=id).first()
+    if room is None:
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    user = User.objects(username=user).first()
+    if user is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user is in room
+    if user in room.users:
+        return jsonify({"status": "error", "message": "User is already in room"})
+    # add user to room
+    room.update(push__users=user)
+    # add room to user
+    user.update(push__chatrooms=room)
+    return jsonify({"status": "success", "message": "User joined room"})
 
 
 '''

@@ -32,7 +32,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ListGroupsFragment extends Fragment implements View.OnClickListener, LocationListener {
+public class ListGroupsFragment extends Fragment implements View.OnClickListener, LocationListener, GroupListAdapter.OnNoteListener {
 
     private final OkHttpClient client = new OkHttpClient();
     private final Moshi moshi = new Moshi.Builder().build();
@@ -94,7 +94,7 @@ public class ListGroupsFragment extends Fragment implements View.OnClickListener
                         recyclerView = rootView.findViewById(R.id.recycler);
                         recyclerView .setHasFixedSize(true);
                         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-                        recyclerView.setAdapter(new JoinGroupAdapter(filteredRooms));
+                        recyclerView.setAdapter(new JoinGroupAdapter(ListGroupsFragment.this));
 
                     }
                 });
@@ -108,6 +108,10 @@ public class ListGroupsFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
 
     }
+
+    @Override
+    public void onNoteClick(int position) {}
+
     @Override
     public void onLocationChanged(@NonNull Location location) {
         Log.d("Location", location.toString());

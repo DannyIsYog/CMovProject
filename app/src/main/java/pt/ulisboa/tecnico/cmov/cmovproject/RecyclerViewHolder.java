@@ -6,15 +6,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class RecyclerViewHolder extends RecyclerView.ViewHolder {
+public class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private TextView view;
-    public RecyclerViewHolder(@NonNull View itemView) {
+    GroupListAdapter.OnNoteListener onNoteListener;
+
+    public RecyclerViewHolder(@NonNull View itemView, GroupListAdapter.OnNoteListener onNoteListener){
         super(itemView);
         view = itemView.findViewById(R.id.chatName);
+        this.onNoteListener = onNoteListener;
+
+        itemView.setOnClickListener(this);
     }
 
     public TextView getView(){
         return view;
+    }
+
+    @Override
+    public void onClick(View view) {
+        onNoteListener.onNoteClick(getAdapterPosition());
     }
 }

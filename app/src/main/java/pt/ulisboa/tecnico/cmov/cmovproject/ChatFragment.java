@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.cmovproject;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -40,13 +41,15 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ChatFragment extends Fragment implements View.OnClickListener, LocationListener {
+public class ChatFragment extends Fragment implements View.OnClickListener, LocationListener, GroupListAdapter.OnNoteListener {
 
     private final OkHttpClient client = new OkHttpClient();
     private final Moshi moshi = new Moshi.Builder().build();
 
     private final Type type = Types.newParameterizedType(List.class, Room.class);
     private final JsonAdapter<List<Room>> adapter = moshi.adapter(type);
+    private  List<Room> filteredRooms = new ArrayList<>();
+
 
 
     private RecyclerView recyclerView;
@@ -93,7 +96,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Loca
                 String resp = response.body().string();
                 Log.d("Response", resp);
                 List<Room> rooms = adapter.fromJson(resp);
-                List<Room> filteredRooms = new ArrayList<>();
                 Location loc;
                 float distance;
                 for(Room room: rooms)
@@ -119,7 +121,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Loca
                         recyclerView = rootView.findViewById(R.id.recycler);
                         recyclerView .setHasFixedSize(true);
                         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-                        recyclerView.setAdapter(new GroupListAdapter(filteredRooms));
+                        recyclerView.setAdapter(new GroupListAdapter(filteredRooms, ChatFragment.this));
                     }
                 });
             }
@@ -133,9 +135,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Loca
     @Override
     public void onClick(View view) {
 
-        //mandar para a activity do Miguel
-        //Intent i = new Intent(ChatFragment.this,.class)
-        //startActivity(i);
     }
 
     @Override
@@ -159,5 +158,22 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Loca
     @Override
     public void onProviderDisabled(@NonNull String provider) {
         LocationListener.super.onProviderDisabled(provider);
+    }
+
+    @Override
+    public void onNoteClick(int position) {
+
+        //TODO chamar o chat respetivo e pssar o grouID com o nome do grupo
+        //mandar para a activity do Miguel
+
+        SharedPreferences sharedPref = this.getActivity().getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("groupID", filteredRooms.get(position).getName());
+
+
+        Intent i = new Intent(ChatFragment.this.getActivity(),ChatActivity.class);
+        i.putExtra("groupID",filteredRooms.get(position).getName());
+        startActivity(i);
+
     }
 }
