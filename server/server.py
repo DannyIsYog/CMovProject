@@ -183,21 +183,22 @@ def createRoom():
     name = request.form['name']
     roomType = request.form['roomType']
     # from string to roomType enum
-    roomType = RoomType[roomType.upper()]
+    roomType = RoomType[roomType.upper()].value[0]
+    print(roomType)
     if roomExists(name):
         return jsonify({"status": "error", "message": "Room already exists"})
     # check if roomType is valid
     if roomType not in [1, 2, 3]:
         return jsonify({"status": "error", "message": "Invalid room type"})
     # check if roomType is of type 3
-    if roomType == RoomType.GEO_CASED.value:
+    if roomType == RoomType.GEO.value[0]:
         # get latitude and longitude
         latitude = request.form['latitude']
         longitude = request.form['longitude']
         radius = request.form['radius']
         # create room
         room = Chatroom(name=name, roomType=roomType, latitude=latitude,
-                        longitude=longitude, radius=radius).save()
+                        longitude=longitude, radius=float(radius)).save()
         return jsonify({"status": "success", "message": "Room created"})
     # create room with longitude and latitude of 0
     room = Chatroom(name=name, roomType=roomType, latitude=0,
