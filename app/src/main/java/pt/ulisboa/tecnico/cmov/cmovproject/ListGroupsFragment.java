@@ -94,7 +94,7 @@ public class ListGroupsFragment extends Fragment implements View.OnClickListener
                         recyclerView = rootView.findViewById(R.id.recycler);
                         recyclerView .setHasFixedSize(true);
                         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-                        recyclerView.setAdapter(new JoinGroupAdapter(ListGroupsFragment.this));
+                        recyclerView.setAdapter(new JoinGroupAdapter(ListGroupsFragment.this,filteredRooms));
 
                     }
                 });

@@ -15,8 +15,9 @@ public class JoinGroupAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
     private GroupListAdapter.OnNoteListener mOnNoteListener;
 
 
-    public JoinGroupAdapter(GroupListAdapter.OnNoteListener onNoteListener) {
+    public JoinGroupAdapter(GroupListAdapter.OnNoteListener onNoteListener,List<Room> rooms) {
         this.mOnNoteListener= onNoteListener;
+        this._groupChats = rooms;
 
     }
 

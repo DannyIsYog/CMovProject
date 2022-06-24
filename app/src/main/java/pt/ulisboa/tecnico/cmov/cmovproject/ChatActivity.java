@@ -54,14 +54,15 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         this.chatGroup = new ChatGroup();
-       if (savedInstanceState == null){
+       /*if (savedInstanceState == null){
            Log.d("ChatActivity","ITS NUUUUUL");
            this.groupID = sharedPref.getString("groupID", "myGroup");
 
        }
        else{
            this.groupID = savedInstanceState.getString("groupID");
-       }
+       }*/
+        this.groupID = getIntent().getExtras().toString();
 
         //this.groupID = "myGroup";
 
