@@ -158,7 +158,8 @@ public class AppContext extends Application {
         try {
             String usernameFromMsg = respObject[0].getString("username");
             String message = respObject[0].getString("message");
-            return new ChatEntry(usernameFromMsg, message);
+            String ts = respObject[0].getString("timestamp");
+            return new ChatEntry(usernameFromMsg, message, ts);
         } catch (JSONException | NullPointerException e) {
             Log.d("AppContext", "conclusion download Exception: "+e.getLocalizedMessage());
             Log.d("AppContext", "End of download, received json: "+respObject[0]);

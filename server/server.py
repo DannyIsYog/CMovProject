@@ -499,6 +499,7 @@ def get_message():
             "message": "Message - GET",
             "username": msgObj.user.username,
             "message": msgObj.content,
+            "timestamp": str(msgObj.id.generation_time)[0:16]
         })
 
 # return the last existing msgID in a groupChat

@@ -36,8 +36,6 @@ import pt.ulisboa.tecnico.cmov.cmovproject.chat.ChatGroup;
 
 public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewChatAdapter.CustomViewHolder> {
 
-    //private List<ChatEntry> entries;
-    //private ChatGroup chatGroup;
     private String myUsername;
     private String myPasswd;
     private String groupID;
@@ -71,7 +69,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
 
     @Override
     public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
-        //ChatEntry chatEntry = chatGroup.getEntries().get(i);
+
         ChatEntry chatEntry = this.appContext.getChatEntry(new ChatEntryID(groupID, i));
 
         Log.d("RecyclerAdapt: bind", "myString = "+customViewHolder.toString());
@@ -79,6 +77,7 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
         //Setting text views on viewHolder
         customViewHolder.msgTextView.setText(chatEntry.getMsg().getText());
         customViewHolder.usernameView.setText(chatEntry.getUsername());
+        customViewHolder.tsView.setText(chatEntry.getTs());
     }
 
     public void setLastKnownIdx(int newLastIdx) {
@@ -94,10 +93,13 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
     @Override
     public int getItemCount() {
         Log.d("RecyclerViewChat", "Entered getItemCount(), will probably return "+this.lastKnownIdx);
-        Log.d("RecyclerViewChat", "Entered getItemCount(), hashCode of this instance: "+this.hashCode());
+        return this.lastKnownIdx+1;
+    }
+
+    public void updateItemCount() {
+
         final OkHttpClient client = new OkHttpClient();
         final JSONObject[] respObject = new JSONObject[1];
-
 
         RequestBody reqBody = new FormBody.Builder()
                 .add("username",this.myUsername )
@@ -120,20 +122,20 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
                 try {
                     resp = response.body().string();
                 } catch (IOException ioe) {
-                    Log.d("RecyclerChat", "getItemCount() - response from server had problem");
-                    Log.d("RecyclerChat", "getItemCount() - exception msg: "+ioe.getLocalizedMessage());
+                    Log.d("RecyclerChat", "updateItemCount() - response from server had problem");
+                    Log.d("RecyclerChat", "updateItemCount() - exception msg: "+ioe.getLocalizedMessage());
                     return;
                 }
                 try {
                     respObject[0] = new JSONObject(resp);
-                    Log.d("RecyclerView - Response", "ItemCount() status: "+respObject[0].getString("status"));
+                    Log.d("RecyclerView - Response", "updateItemCount() status: "+respObject[0].getString("status"));
                     if (!respObject[0].getString("status").equals("success")) {
                         Log.d("RecyclerViewChat", "Error getting last msg ID: response was not success, instead it was: "+respObject[0].toString());
                         //throw new IOException("ERROR GETTING LAST MSG ID");
                         return;
                     }
 
-                    Log.d("RecyclerViewChat", "getItemCount(), received pkt with ID = "
+                    Log.d("RecyclerViewChat", "updateItemCount(), received pkt with ID = "
                             + respObject[0].getString("message"));
 
                     myAdapter.setLastKnownIdx( Integer.parseInt(respObject[0].getString("message")) );
@@ -151,22 +153,20 @@ public class RecyclerViewChatAdapter extends RecyclerView.Adapter<RecyclerViewCh
                 Log.d("RecyclerViewChatAdapter", "error downloading last msg ID: "+e.getMessage());
             }
         });
-        synchronized (this.lockLastIdx) {
-            Log.d("RecyclerChat", "ending getItemCount(), will return "+this.lastKnownIdx);
-            return this.lastKnownIdx + 1;
-        }
     }
 
     static class CustomViewHolder extends RecyclerView.ViewHolder {
 
         protected TextView usernameView;
         protected TextView msgTextView;
+        protected TextView tsView;
 
         public CustomViewHolder(View view) {
             super(view);
             Log.d("RecyclerAdapt: custom", "someone called my constructor!");
             this.usernameView = (TextView) view.findViewById(R.id.chat_entry_row_username);
             this.msgTextView = (TextView) view.findViewById(R.id.chat_entry_row_text);
+            this.tsView = (TextView) view.findViewById(R.id.chat_entry_row_ts);
         }
 
         @Override
