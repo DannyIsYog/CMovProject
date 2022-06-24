@@ -104,24 +104,34 @@ public class ChatActivity extends AppCompatActivity {
                     return true;
 
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    // enter detected, lets add string to list
-                    //addEntry(getNewEntry()); OLD CODE
+
                     sendMessage(getNewEntry().getMsg());
+                    adapter.updateItemCount();
                 }
                 return false;
             }
         });
 
+        // TODO: create a thread to update the item count each x seconds
+
+        // TODO: create a thread to search for deleted messages a notify adapter/clear cache position
+
+        // TODO: thread to see if user is still in room, otherwise leave
+
+
         // show existing messages
+        // erase this since it's very heavy
         updateShowMessages();
 
 
     }
 
     private void updateShowMessages(){
-
+        this.adapter.updateItemCount();
         Log.d("ChatActivity", "Update() : will notify RecyclerAdapter");
         this.adapter.notifyDataSetChanged();
+
+        Log.d("ChatActivity", "Update() : notified");
 
     }
 
@@ -130,7 +140,7 @@ public class ChatActivity extends AppCompatActivity {
         // reset text on input
         et.setText("");
         Log.d("ChatActivity: getNE", "textMsg = "+textMsg);
-        return new ChatEntry(this.myUsername, textMsg);
+        return new ChatEntry(this.myUsername, textMsg, "never");
     }
 
     private void addEntry(ChatEntry newEntry){

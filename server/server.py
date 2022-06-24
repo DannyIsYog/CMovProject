@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
-from socket import socket
-from unicodedata import name
 from flask import Flask, request, jsonify
 from flask_mongoengine import MongoEngine
 from enum import Enum
@@ -293,18 +291,17 @@ def get_join_rooms():
     user = User.objects(username=user).first()
     if user is None:
         return jsonify({"status": "error", "message": "User does not exist"})
+    # get all rooms
+    rooms = Chatroom.objects()
     # get all rooms of user
-    rooms = user.chatrooms
-    # get all roooms
-    allRooms = Chatroom.objects()
-    # get all rooms of type 3
-    joinRooms = [room for room in allRooms if room.roomType == 3]
-    # remove rooms from joinRooms that are already in rooms
-    for room in rooms:
-        joinRooms.remove(room)
-    # join rooms and joinRooms
-    joinRooms.extend(rooms)
-    return jsonify([room.to_json() for room in joinRooms])
+    user_rooms = user.chatrooms
+    # get all rooms that user can join
+    join_rooms = [room for room in rooms if room not in user_rooms]
+    # remove rooms of type 2
+    join_rooms = [room for room in join_rooms if room.roomType !=
+                  RoomType.PRIVATE.value[0]]
+    # return all rooms that user can join
+    return jsonify([room.to_json() for room in join_rooms])
 
 # deletes a room
 
@@ -348,6 +345,30 @@ def get_room_name():
     if room is None:
         return jsonify({"status": "error", "message": "Room does not exist"})
     return jsonify({"status": "success", "message": room.name})
+
+# user joins a room by id
+
+
+@app.route('/room/join/id', methods=['POST'])
+def join_room_id():
+    id = request.form['id']
+    user = request.form['user']
+    # check if room exists
+    room = Chatroom.objects(id=id).first()
+    if room is None:
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    user = User.objects(username=user).first()
+    if user is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user is in room
+    if user in room.users:
+        return jsonify({"status": "error", "message": "User is already in room"})
+    # add user to room
+    room.update(push__users=user)
+    # add room to user
+    user.update(push__chatrooms=room)
+    return jsonify({"status": "success", "message": "User joined room"})
 
 
 '''
@@ -499,6 +520,7 @@ def get_message():
             "message": "Message - GET",
             "username": msgObj.user.username,
             "message": msgObj.content,
+            "timestamp": str(msgObj.id.generation_time)[0:16]
         })
 
 # return the last existing msgID in a groupChat

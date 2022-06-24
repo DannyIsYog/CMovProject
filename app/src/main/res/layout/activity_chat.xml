@@ -6,10 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity">
 
-    <!--
-    <androidx.recyclerview.widget.RecyclerView
-    <ListView
-    -->
+
     <androidx.recyclerview.widget.RecyclerView
 
         android:id="@+id/chat_entries"
@@ -28,9 +25,9 @@
         android:inputType="textPersonName"
         android:text="@string/default_new_msg_txt"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:autofillHints="hello,bye,yes,no,MEPP is great,are you nuts?"
         />
 
-        <!-- android:autofillHints="hello,bye,yes,no,MEPP is great,are you nuts?" -->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
