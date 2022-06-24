@@ -58,14 +58,9 @@ public class ChatActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences(AppContext.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
         this.chatGroup = new ChatGroup();
-        Intent intent = getIntent();
-        this.groupID = intent.getStringExtra("groupId");
-       if (groupID == null){
-           Log.d("ChatActivity","GroupID was null on intent");
-           this.groupID = sharedPref.getString("groupID", "NoGroupDefined");
+       
+        this.groupID = getIntent().getExtras().toString();
 
-       }
-        Log.d("ChatActivity", "GroupID : "+this.groupID);
         //this.groupID = "myGroup";
 
         this.myUsername = sharedPref.getString("username", "MR. NOBODY");
