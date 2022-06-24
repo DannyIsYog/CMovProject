@@ -26,11 +26,11 @@ public class JoinGroupFragment extends Fragment {
 
     double latitude;
     double longitude;
+    
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Toast.makeText(getContext(),"SIM",Toast.LENGTH_SHORT).show();
 
         View rootView = inflater.inflate(R.layout.fragment_joingroup, container, false);
 
