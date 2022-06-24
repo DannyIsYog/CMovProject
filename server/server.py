@@ -321,7 +321,7 @@ def create_user():
         return jsonify({"status": "error", "message": "User already exists"})
     User(username=username,
          password=password).save()
-    return "User {} created".format(username)
+    return jsonify({"status": "success", "message": "User created"})
 
 # delete user
 
