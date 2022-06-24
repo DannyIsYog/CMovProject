@@ -10,6 +10,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Message;
 import android.util.Log;
@@ -54,17 +58,16 @@ public class MoreFragment extends Fragment implements View.OnClickListener{
         btnNewGroup.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 addGroup();
-
             }
         });
 
         btnJoinGroup.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                joinGroup();
-
+                Fragment fragment = new ListGroupsFragment();
+                FragmentManager fm = getChildFragmentManager();
+                fm.beginTransaction().replace(R.id.frag_more, fragment).commit();
             }
         });
-
 
         return  rootView;
     }
@@ -162,10 +165,6 @@ public class MoreFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    public void joinGroup(){
-        //mostrar os grupos para escolher
-
-    }
 
 
 

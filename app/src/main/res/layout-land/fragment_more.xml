@@ -10,10 +10,10 @@
     <androidx.appcompat.widget.AppCompatButton
 
     android:id="@+id/btn_createGroup"
-        android:layout_width="400dp"
+        android:layout_width="250dp"
         android:layout_height="200dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/btn_join_create_group"
         android:text="Create New Group"
         android:textColor="@color/btn_symbols"
@@ -22,14 +22,14 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_joinGroup"
-        android:layout_width="400dp"
+        android:layout_width="250dp"
         android:layout_height="200dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="270dp"
-        android:textColor="@color/btn_symbols"
+        android:layout_marginStart="390dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/btn_join_create_group"
         android:text="Join Group"
+        android:textColor="@color/btn_symbols"
         android:textSize="20dp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
 </FrameLayout>
