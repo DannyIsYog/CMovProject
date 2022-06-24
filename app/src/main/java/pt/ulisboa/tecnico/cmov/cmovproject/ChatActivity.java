@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.LruCache;
@@ -42,6 +43,8 @@ public class ChatActivity extends AppCompatActivity {
     private EditText et;
     private RecyclerViewChatAdapter adapter;
     private AppContext appContext;
+
+    private Boolean isOutOfRoom = false;
 
 
     @Override
@@ -104,7 +107,38 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        // ** GPS STUFF **
+        // check if room is geoFenced
+        Integer roomType = savedInstanceState.getInt("roomType", 1);
+        Log.d("ChatActivity", "roomType: "+groupType);
+
+        if(roomType==3) {
+            Double roomLatitude = savedInstanceState.getDouble("roomLatitude");
+            Double roomLongitude = savedInstanceState.getDouble("roomLongitude");
+            Double roomRadius = savedInstanceState.getDouble("roomRadius");
+            if (roomLongitude == 0 || roomLatitude == 0 || roomRadius == 0 ) {
+                Log.e("ChatActivity", "Initialize GPS listener: one of the parms was zero:");
+                Log.e("ChatActivity", "roomLatitude = "+roomLatitude);
+                Log.e("ChatActivity", "roomLongitude = "+roomLongitude);
+                Log.e("ChatActivity", "roomRadius = "+roomRadius);
+            }
+            ChatGPSListener gpsListener = new ChatGPSListener(this, roomLatitude, roomLongitude, roomRadius);
+
+        }
+
         // TODO: create a thread to update the item count each x seconds
+        Runnable threadItemCount = new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                    adapter.updateItemCount();
+                } catch (InterruptedException ie) {
+                    return;
+                }
+            }
+        };
+        Thread thrItemCount = new Thread(threadItemCount, "Thread update item count");
+        thrItemCount.start();
 
         // TODO: create a thread to search for deleted messages a notify adapter/clear cache position
 
@@ -186,5 +220,17 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
         updateShowMessages();
+    }
+
+    public void setOutOfRoom(Boolean newVal) {
+        synchronized (this.isOutOfRoom) {
+            this.isOutOfRoom = newVal;
+        }
+    }
+
+    public Boolean getIsOutOfRoom(){
+        synchronized (this.isOutOfRoom) {
+            return this.isOutOfRoom;
+        }
     }
 }

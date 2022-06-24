@@ -51,7 +51,7 @@ public class Login extends AppCompatActivity {
 
         // GO TO CHAT TO DEBUG
         // TODO: CHANGE THIS IF NEEDED (debug chat activity)
-        boolean GO_TO_CHAT = false;
+        boolean GO_TO_CHAT = true;
         if (GO_TO_CHAT) {
             Intent intent = new Intent(Login.this, ChatActivity.class);
             startActivity(intent);

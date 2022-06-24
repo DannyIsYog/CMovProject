@@ -67,12 +67,20 @@ class User(db.Document):
     def to_json(self):
         return {"username": self.username, "password": self.password, "chatroom": self.chatrooms}
 
+class Report(db.Document):
+    
+    complainUser = db.ReferenceField(User)
+    reportedUser = db.ReferenceField(User)
+
+    def to_json(self):
+        return {"complainUser": self.complainUser, "reportedUser": self.reportedUser}
+
 
 class Message(db.Document):
     content = db.StringField()
     user = db.ReferenceField(User)
     chatroom = db.ReferenceField(Chatroom)
-    #id = db.IntField()
+    reports = db.ListField(db.ReferenceField('Report'))
 
     def to_json(self):
         return {"content": self.content, "user": self.user, "chatroom": self.chatroom}
@@ -533,6 +541,37 @@ def get_last_message_id():
             "message": str(len(roomObj.messages) - 1)
         })
 
+@app.route('/message/report', methods=['POST'])
+def report_message():
+    room = request.form['chatroom']
+    complainUser = request.form['username']
+    password = request.form['password']
+    messageID = request.form['messageID']
+    # check if room exists
+    if not roomExists(room):
+        return jsonify({"status": "error", "message": "Room does not exist"})
+    # check if user exists
+    if User.objects(username=complainUser).first() is None:
+        return jsonify({"status": "error", "message": "User does not exist"})
+    # check if user has access to room
+    if not userHasAccess(complainUser, Chatroom.objects(name=room).first()):
+        return jsonify({"status": "error", "message": "User does not have access to room"})
+    # check if user is in room
+    roomObj = Chatroom.objects(name=room).first()
+    userObj = User.objects(username=complainUser).first()
+    if userObj not in roomObj.users:
+        return jsonify({"status": "error", "message": "User not in room"})
+
+    # get reported msg
+    reportedMsg = roomObj.messages[int(messageID)]
+    reportedUser = reportedMsg.user
+    # build report
+    reportObj = Report(complainUser=userObj, reportedUser=message)
+    msgObj.save()
+
+    roomObj.update(push__messages=msgObj.to_dbref())
+    roomObj.save()
+    return jsonify({"status": "success", "message": "Message sent"})
 
 '''
 Mainpage / Debug
