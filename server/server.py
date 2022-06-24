@@ -52,7 +52,10 @@ class Chatroom(db.Document):
             'name': self.name,
             'users': [],
             'messages': [],
-            'roomType': self.roomType
+            'roomType': self.roomType,
+            'latitude': str(self.latitude),
+            'longitude': str(self.longitude),
+            'radius': str(self.radius)
         }
 
 
@@ -279,7 +282,8 @@ def get_user_rooms():
     rooms = user.chatrooms
     return jsonify([room.to_json() for room in rooms])
 
-# get all rooms of a user
+
+# get all rooms of a can join
 
 
 @app.route('/room/get/join', methods=['POST'])

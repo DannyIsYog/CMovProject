@@ -1,11 +1,18 @@
 package pt.ulisboa.tecnico.cmov.cmovproject;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +29,7 @@ import com.squareup.moshi.Types;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -32,7 +40,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ChatFragment extends Fragment implements View.OnClickListener {
+public class ChatFragment extends Fragment implements View.OnClickListener, LocationListener {
 
     private final OkHttpClient client = new OkHttpClient();
     private final Moshi moshi = new Moshi.Builder().build();
@@ -42,6 +50,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
 
     private RecyclerView recyclerView;
+
+    double latitude;
+    double longitude;
+    Location currentLoc;
 
     @Nullable
     @Override
@@ -55,7 +67,18 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 .post(formBody)
                 .build();
 
-
+        LocationManager locationManager = (LocationManager) chatPage.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(chatPage, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(chatPage, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(chatPage, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         View rootView = inflater.inflate(R.layout.fragment_chat,container,false);
 
 
@@ -70,17 +93,33 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 String resp = response.body().string();
                 Log.d("Response", resp);
                 List<Room> rooms = adapter.fromJson(resp);
-                Log.d("Response", String.valueOf(rooms));
+                List<Room> filteredRooms = new ArrayList<>();
+                Location loc;
+                float distance;
+                for(Room room: rooms)
+                {
+                    if(room.getRoomType()==3) {
+                        loc = new Location("");
+                        loc.setLatitude(room.getLatitude());
+                        loc.setLongitude(room.getLongitude());
+                        while(currentLoc == null) {}
+                        distance = loc.distanceTo(currentLoc);
+                        if (distance < room.getRadius()) filteredRooms.add(room);
+                    }
+                    else
+                    {
+                        filteredRooms.add(room);
+                    }
+                }
 
                 //create recycleview
-
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         recyclerView = rootView.findViewById(R.id.recycler);
                         recyclerView .setHasFixedSize(true);
                         recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-                        recyclerView.setAdapter(new GroupListAdapter(rooms));
+                        recyclerView.setAdapter(new GroupListAdapter(filteredRooms));
                     }
                 });
             }
@@ -97,5 +136,28 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         //mandar para a activity do Miguel
         //Intent i = new Intent(ChatFragment.this,.class)
         //startActivity(i);
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        Log.d("Location", location.toString());
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        currentLoc = new Location(location);
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull List<Location> locations) {
+        LocationListener.super.onLocationChanged(locations);
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        LocationListener.super.onProviderEnabled(provider);
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        LocationListener.super.onProviderDisabled(provider);
     }
 }
